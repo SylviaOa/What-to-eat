@@ -355,9 +355,6 @@ body {
 }
 
 /* dropdown panel */
-.filter-dropdown-wrap {
-  position: relative;
-}
 .filter-dropdown-panel {
   display: none;
   position: fixed;
@@ -864,43 +861,35 @@ body {
       <button class="filter-chip" data-filter-type="noFire" data-filter-value="true" onclick="App.applyFilter('noFire')">不用开火</button>
       <button class="filter-chip" data-filter-type="onePot" data-filter-value="true" onclick="App.applyFilter('onePot')">一锅出</button>
 
-      <!-- 人数下拉 -->
-      <div class="filter-dropdown-wrap">
-        <button class="filter-chip dropdown-trigger" id="dd-servings" onclick="App.toggleDropdown('servings', event)">人数</button>
-        <div class="filter-dropdown-panel" id="panel-servings">
-          <div class="dd-item" data-filter-type="servings" data-filter-value="一人食" onclick="App.applyDropdownFilter('servings', '一人食')">一人食</div>
-          <div class="dd-item" data-filter-type="servings" data-filter-value="多人食" onclick="App.applyDropdownFilter('servings', '多人食')">多人食</div>
-        </div>
-      </div>
+      <!-- 下拉触发按钮 -->
+      <button class="filter-chip dropdown-trigger" id="dd-servings" onclick="App.toggleDropdown('servings', event)">人数</button>
+      <button class="filter-chip dropdown-trigger" id="dd-method" onclick="App.toggleDropdown('method', event)">烹饪方式</button>
+      <button class="filter-chip dropdown-trigger" id="dd-cuisine" onclick="App.toggleDropdown('cuisine', event)">菜系</button>
+    </div>
 
-      <!-- 烹饪方式下拉 -->
-      <div class="filter-dropdown-wrap">
-        <button class="filter-chip dropdown-trigger" id="dd-method" onclick="App.toggleDropdown('method', event)">烹饪方式</button>
-        <div class="filter-dropdown-panel" id="panel-method">
-          <div class="dd-item" data-filter-type="method" data-filter-value="炒" onclick="App.applyDropdownFilter('method', '炒')">炒</div>
-          <div class="dd-item" data-filter-type="method" data-filter-value="煮" onclick="App.applyDropdownFilter('method', '煮')">煮</div>
-          <div class="dd-item" data-filter-type="method" data-filter-value="蒸" onclick="App.applyDropdownFilter('method', '蒸')">蒸</div>
-          <div class="dd-item" data-filter-type="method" data-filter-value="煎" onclick="App.applyDropdownFilter('method', '煎')">煎</div>
-          <div class="dd-item" data-filter-type="method" data-filter-value="拌" onclick="App.applyDropdownFilter('method', '拌')">拌</div>
-          <div class="dd-item" data-filter-type="method" data-filter-value="焖" onclick="App.applyDropdownFilter('method', '焖')">焖/炖</div>
-          <div class="dd-item" data-filter-type="method" data-filter-value="烤" onclick="App.applyDropdownFilter('method', '烤')">烤</div>
-        </div>
-      </div>
-
-      <!-- 菜系下拉 -->
-      <div class="filter-dropdown-wrap">
-        <button class="filter-chip dropdown-trigger" id="dd-cuisine" onclick="App.toggleDropdown('cuisine', event)">菜系</button>
-        <div class="filter-dropdown-panel" id="panel-cuisine">
-          <div class="dd-item" data-filter-type="cuisine" data-filter-value="家常" onclick="App.applyDropdownFilter('cuisine', '家常')">家常</div>
-          <div class="dd-item" data-filter-type="cuisine" data-filter-value="川菜" onclick="App.applyDropdownFilter('cuisine', '川菜')">川菜</div>
-          <div class="dd-item" data-filter-type="cuisine" data-filter-value="粤菜" onclick="App.applyDropdownFilter('cuisine', '粤菜')">粤菜</div>
-          <div class="dd-item" data-filter-type="cuisine" data-filter-value="日式" onclick="App.applyDropdownFilter('cuisine', '日式')">日式</div>
-          <div class="dd-item" data-filter-type="cuisine" data-filter-value="西式" onclick="App.applyDropdownFilter('cuisine', '西式')">西式</div>
-          <div class="dd-item" data-filter-type="cuisine" data-filter-value="西北" onclick="App.applyDropdownFilter('cuisine', '西北')">西北</div>
-          <div class="dd-item" data-filter-type="cuisine" data-filter-value="湘菜" onclick="App.applyDropdownFilter('cuisine', '湘菜')">湘菜</div>
-          <div class="dd-item" data-filter-type="cuisine" data-filter-value="云贵" onclick="App.applyDropdownFilter('cuisine', '云贵')">云贵</div>
-        </div>
-      </div>
+    <!-- 下拉面板（独立于 filter-bar，不受 overflow 裁切） -->
+    <div class="filter-dropdown-panel" id="panel-servings">
+      <div class="dd-item" data-filter-type="servings" data-filter-value="一人食" onclick="App.applyDropdownFilter('servings', '一人食')">一人食</div>
+      <div class="dd-item" data-filter-type="servings" data-filter-value="多人食" onclick="App.applyDropdownFilter('servings', '多人食')">多人食</div>
+    </div>
+    <div class="filter-dropdown-panel" id="panel-method">
+      <div class="dd-item" data-filter-type="method" data-filter-value="炒" onclick="App.applyDropdownFilter('method', '炒')">炒</div>
+      <div class="dd-item" data-filter-type="method" data-filter-value="煮" onclick="App.applyDropdownFilter('method', '煮')">煮</div>
+      <div class="dd-item" data-filter-type="method" data-filter-value="蒸" onclick="App.applyDropdownFilter('method', '蒸')">蒸</div>
+      <div class="dd-item" data-filter-type="method" data-filter-value="煎" onclick="App.applyDropdownFilter('method', '煎')">煎</div>
+      <div class="dd-item" data-filter-type="method" data-filter-value="拌" onclick="App.applyDropdownFilter('method', '拌')">拌</div>
+      <div class="dd-item" data-filter-type="method" data-filter-value="焖" onclick="App.applyDropdownFilter('method', '焖')">焖/炖</div>
+      <div class="dd-item" data-filter-type="method" data-filter-value="烤" onclick="App.applyDropdownFilter('method', '烤')">烤</div>
+    </div>
+    <div class="filter-dropdown-panel" id="panel-cuisine">
+      <div class="dd-item" data-filter-type="cuisine" data-filter-value="家常" onclick="App.applyDropdownFilter('cuisine', '家常')">家常</div>
+      <div class="dd-item" data-filter-type="cuisine" data-filter-value="川菜" onclick="App.applyDropdownFilter('cuisine', '川菜')">川菜</div>
+      <div class="dd-item" data-filter-type="cuisine" data-filter-value="粤菜" onclick="App.applyDropdownFilter('cuisine', '粤菜')">粤菜</div>
+      <div class="dd-item" data-filter-type="cuisine" data-filter-value="日式" onclick="App.applyDropdownFilter('cuisine', '日式')">日式</div>
+      <div class="dd-item" data-filter-type="cuisine" data-filter-value="西式" onclick="App.applyDropdownFilter('cuisine', '西式')">西式</div>
+      <div class="dd-item" data-filter-type="cuisine" data-filter-value="西北" onclick="App.applyDropdownFilter('cuisine', '西北')">西北</div>
+      <div class="dd-item" data-filter-type="cuisine" data-filter-value="湘菜" onclick="App.applyDropdownFilter('cuisine', '湘菜')">湘菜</div>
+      <div class="dd-item" data-filter-type="cuisine" data-filter-value="云贵" onclick="App.applyDropdownFilter('cuisine', '云贵')">云贵</div>
     </div>
 
     <!-- 菜品列表 -->
