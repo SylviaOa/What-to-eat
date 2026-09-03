@@ -1,0 +1,4890 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>今天吃啥</title>
+  <style>
+/* ===== Reset & Base ===== */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --primary: #FF6B35;
+  --primary-light: #FF8F5E;
+  --primary-bg: #FFF5F0;
+  --secondary: #2EC4B6;
+  --secondary-light: #E8FAF8;
+  --bg: #FAFAF8;
+  --card-bg: #FFFFFF;
+  --text: #2D2D2D;
+  --text-light: #666666;
+  --text-lighter: #999999;
+  --border: #EEEEEE;
+  --success: #4CAF50;
+  --warning: #FF9800;
+  --danger: #F44336;
+  --radius: 16px;
+  --radius-sm: 10px;
+  --shadow: 0 2px 12px rgba(0,0,0,0.06);
+  --shadow-lg: 0 8px 30px rgba(0,0,0,0.1);
+}
+
+html { font-size: 16px; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ===== Page Wrapper ===== */
+.page {
+  display: none;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 0 16px 100px;
+  animation: fadeIn 0.3s ease;
+}
+.page.active { display: block; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== Header ===== */
+.header {
+  text-align: center;
+  padding: 40px 0 24px;
+}
+.header .logo {
+  font-size: 3rem;
+  margin-bottom: 8px;
+  display: block;
+  animation: bounce 2s ease infinite;
+}
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+.header h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.header p {
+  color: var(--text-light);
+  font-size: 0.875rem;
+  margin-top: 4px;
+}
+
+/* ===== Section ===== */
+.section {
+  margin-bottom: 24px;
+}
+.section-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.section-title .icon { font-size: 1.2rem; }
+
+/* ===== Tag Input Area ===== */
+.tag-input-area {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 16px;
+  box-shadow: var(--shadow);
+}
+.tags-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-height: 32px;
+  margin-bottom: 12px;
+}
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  animation: slideUp 0.2s ease;
+}
+.tag-ingredient {
+  background: var(--primary-bg);
+  color: var(--primary);
+  border: 1px solid rgba(255,107,53,0.2);
+}
+.tag-avoid {
+  background: #FFF0F0;
+  color: var(--danger);
+  border: 1px solid rgba(244,67,54,0.2);
+}
+.tag-seasoning {
+  background: var(--secondary-light);
+  color: var(--secondary);
+  border: 1px solid rgba(46,196,182,0.2);
+}
+.tag .remove {
+  cursor: pointer;
+  font-size: 1rem;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+  line-height: 1;
+}
+.tag .remove:hover { opacity: 1; }
+
+.input-row {
+  display: flex;
+  gap: 8px;
+}
+.input-row input {
+  flex: 1;
+  padding: 10px 14px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.input-row input:focus {
+  border-color: var(--primary);
+}
+.input-row input::placeholder {
+  color: var(--text-lighter);
+}
+.btn-add {
+  padding: 10px 16px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+.btn-add:active { transform: scale(0.95); }
+
+/* Quick add buttons */
+.quick-adds {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+.quick-add-btn {
+  padding: 4px 10px;
+  border: 1.5px dashed var(--border);
+  border-radius: 16px;
+  background: none;
+  font-size: 0.8rem;
+  color: var(--text-light);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.quick-add-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: var(--primary-bg);
+}
+
+/* ===== Saved Preferences ===== */
+.saved-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 10px;
+  padding: 8px 12px;
+  background: #F8F8F6;
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+  color: var(--text-light);
+}
+.saved-row .action-btns {
+  display: flex;
+  gap: 8px;
+}
+.saved-row button {
+  background: none;
+  border: none;
+  color: var(--primary);
+  font-size: 0.8rem;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+/* ===== Main CTA Button ===== */
+.btn-primary {
+  display: block;
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  color: white;
+  border: none;
+  border-radius: var(--radius);
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(255,107,53,0.3);
+  transition: all 0.3s;
+  margin-top: 24px;
+}
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255,107,53,0.4);
+}
+.btn-primary:active {
+  transform: translateY(0);
+}
+.btn-primary:disabled {
+  background: #CCC;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+/* ===== Results Page ===== */
+.results-header {
+  display: flex;
+  align-items: center;
+  padding: 16px 0;
+  gap: 12px;
+}
+.btn-back {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--card-bg);
+  border: none;
+  border-radius: 12px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+.btn-back:active { transform: scale(0.9); }
+.results-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+.results-count {
+  font-size: 0.85rem;
+  color: var(--text-light);
+}
+
+/* ===== Filter Bar ===== */
+.filter-bar {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 8px 0 16px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.filter-bar::-webkit-scrollbar { display: none; }
+
+.filter-chip {
+  padding: 7px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 20px;
+  background: var(--card-bg);
+  font-size: 0.8rem;
+  color: var(--text-light);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+.filter-chip.active {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: var(--primary-bg);
+  font-weight: 500;
+}
+.filter-chip:active { transform: scale(0.95); }
+
+.filter-group {
+  padding: 12px 0;
+}
+.filter-group-title {
+  font-size: 0.8rem;
+  color: var(--text-lighter);
+  margin-bottom: 8px;
+}
+.filter-group .filter-bar {
+  padding: 0;
+}
+
+/* ===== Recipe Card ===== */
+.recipe-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.recipe-card {
+  display: flex;
+  gap: 14px;
+  padding: 16px;
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  transition: all 0.2s;
+  animation: slideUp 0.3s ease;
+  animation-fill-mode: both;
+}
+.recipe-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+.recipe-card:active {
+  transform: translateY(0);
+}
+.recipe-card .emoji-img {
+  width: 64px;
+  height: 64px;
+  background: #F5F5F3;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+.recipe-card .info {
+  flex: 1;
+  min-width: 0;
+}
+.recipe-card .name {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+.recipe-card .desc {
+  font-size: 0.8rem;
+  color: var(--text-light);
+  margin-bottom: 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.recipe-card .meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.meta-tag {
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 0.7rem;
+  font-weight: 500;
+}
+.meta-tag.perfect {
+  background: #E8F5E9;
+  color: var(--success);
+}
+.meta-tag.missing-seasoning {
+  background: #FFF3E0;
+  color: var(--warning);
+}
+.meta-tag.missing-ingredient {
+  background: #FFEBEE;
+  color: var(--danger);
+}
+.meta-tag.method {
+  background: #F3E5F5;
+  color: #9C27B0;
+}
+.meta-tag.time {
+  background: #E3F2FD;
+  color: #1976D2;
+}
+
+/* ===== Empty State ===== */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-light);
+}
+.empty-state .emoji { font-size: 3rem; margin-bottom: 12px; }
+.empty-state p { font-size: 0.9rem; }
+
+/* ===== Detail Page ===== */
+.detail-hero {
+  text-align: center;
+  padding: 32px 0 24px;
+}
+.detail-hero .emoji-big {
+  font-size: 5rem;
+  display: block;
+  margin-bottom: 12px;
+}
+.detail-hero h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+.detail-hero .desc {
+  color: var(--text-light);
+  font-size: 0.9rem;
+  margin-top: 4px;
+}
+.detail-meta {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 16px;
+}
+.detail-meta-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px 16px;
+  background: var(--card-bg);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow);
+  min-width: 80px;
+}
+.detail-meta-item .value {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--primary);
+}
+.detail-meta-item .label {
+  font-size: 0.75rem;
+  color: var(--text-lighter);
+  margin-top: 2px;
+}
+
+/* Detail sections */
+.detail-section {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow);
+}
+.detail-section h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Ingredient list in detail */
+.ingredient-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.ingredient-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 10px;
+  background: #F8F8F6;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+}
+.ingredient-item .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.ingredient-item .dot.have { background: var(--success); }
+.ingredient-item .dot.need { background: var(--danger); }
+.ingredient-item .amount {
+  color: var(--text-lighter);
+  font-size: 0.75rem;
+  margin-left: auto;
+}
+
+/* Steps */
+.step-list {
+  counter-reset: step;
+}
+.step-item {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+  position: relative;
+}
+.step-item:last-child { margin-bottom: 0; }
+.step-item::before {
+  counter-increment: step;
+  content: counter(step);
+  width: 28px;
+  height: 28px;
+  background: var(--primary);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+.step-item:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: 13px;
+  top: 32px;
+  bottom: -12px;
+  width: 2px;
+  background: var(--border);
+}
+.step-item .step-text {
+  font-size: 0.9rem;
+  line-height: 1.7;
+  padding-top: 3px;
+}
+
+/* Tips */
+.tip-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.tip-item {
+  display: flex;
+  gap: 8px;
+  padding: 10px 12px;
+  background: #FFFBEB;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  color: #8B6914;
+}
+.tip-item::before {
+  content: '💡';
+  flex-shrink: 0;
+}
+
+/* Seasoning list in detail */
+.seasoning-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.seasoning-item {
+  padding: 5px 12px;
+  border-radius: 16px;
+  font-size: 0.8rem;
+}
+.seasoning-item.have {
+  background: var(--secondary-light);
+  color: var(--secondary);
+}
+.seasoning-item.essential-missing {
+  background: #FFF3E0;
+  color: var(--warning);
+}
+.seasoning-item.optional-missing {
+  background: #F5F5F5;
+  color: var(--text-lighter);
+}
+
+/* ===== Tutorial Links ===== */
+.tutorial-links-section {
+  background: linear-gradient(135deg, #FFF8F5, #FFF5F0);
+}
+.tutorial-desc {
+  font-size: 0.82rem;
+  color: var(--text-lighter);
+  margin-bottom: 14px;
+}
+.tutorial-links {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.tutorial-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  color: var(--text);
+  transition: all 0.2s;
+}
+.tutorial-btn:active {
+  transform: scale(0.98);
+}
+.tutorial-btn .tutorial-icon {
+  font-size: 1.6rem;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+}
+.tutorial-btn .tutorial-text {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+.tutorial-btn .tutorial-platform {
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+.tutorial-btn .tutorial-sub {
+  font-size: 0.75rem;
+  color: var(--text-lighter);
+  margin-top: 1px;
+}
+.tutorial-btn .tutorial-arrow {
+  font-size: 1.1rem;
+  color: var(--text-lighter);
+  flex-shrink: 0;
+}
+/* Platform colors */
+.tutorial-btn.xiaohongshu {
+  background: #FFF0F0;
+}
+.tutorial-btn.xiaohongshu .tutorial-icon {
+  background: #FFE4E4;
+}
+.tutorial-btn.xiaohongshu .tutorial-platform {
+  color: #FF2442;
+}
+.tutorial-btn.bilibili {
+  background: #F0F6FF;
+}
+.tutorial-btn.bilibili .tutorial-icon {
+  background: #E4EFFF;
+}
+.tutorial-btn.bilibili .tutorial-platform {
+  color: #00A1D6;
+}
+.tutorial-btn.douyin {
+  background: #F5F0FF;
+}
+.tutorial-btn.douyin .tutorial-icon {
+  background: #EDE4FF;
+}
+.tutorial-btn.douyin .tutorial-platform {
+  color: #161823;
+}
+
+/* ===== Footer Note ===== */
+.footer-note {
+  text-align: center;
+  margin-top: 20px;
+  padding: 16px;
+}
+.footer-note p {
+  font-size: 0.75rem;
+  color: var(--text-lighter);
+}
+
+/* ===== Utilities ===== */
+.mt-8 { margin-top: 8px; }
+.mt-16 { margin-top: 16px; }
+.text-center { text-align: center; }
+
+/* ===== Responsive ===== */
+@media (max-width: 360px) {
+  .ingredient-list { grid-template-columns: 1fr; }
+  .detail-meta { gap: 8px; }
+  .detail-meta-item { min-width: 65px; padding: 10px 12px; }
+}
+
+  </style>
+</head>
+<body>
+
+  <!-- ==================== Page 1: 输入食材 ==================== -->
+  <div id="page-input" class="page active">
+    
+    <div class="header">
+      <span class="logo">🍳</span>
+      <h1>今天吃啥</h1>
+      <p>告诉我冰箱里有啥，帮你想好做什么</p>
+    </div>
+
+    <!-- 食材输入 -->
+    <div class="section">
+      <div class="section-title"><span class="icon">🥬</span> 冰箱里有什么食材？</div>
+      <div class="tag-input-area">
+        <div class="tags-container" id="ingredients-tags"></div>
+        <div class="input-row">
+          <input type="text" id="input-ingredient" placeholder="输入食材，如：西红柿、鸡蛋">
+          <button class="btn-add" onclick="App.addTag('ingredients', 'input-ingredient')">添加</button>
+        </div>
+        <div class="quick-adds" id="quick-ingredients"></div>
+      </div>
+    </div>
+
+    <!-- 忌口 -->
+    <div class="section">
+      <div class="section-title"><span class="icon">🚫</span> 不要什么 / 忌口 / 过敏</div>
+      <div class="tag-input-area">
+        <div class="tags-container" id="avoid-tags"></div>
+        <div class="input-row">
+          <input type="text" id="input-avoid" placeholder="如：辣椒、花生（不填也行）">
+          <button class="btn-add" onclick="App.addTag('avoidList', 'input-avoid')">添加</button>
+        </div>
+        <div class="quick-adds" id="quick-avoid"></div>
+        <div class="saved-row" id="avoid-save-row"></div>
+      </div>
+    </div>
+
+    <!-- 调料 -->
+    <div class="section">
+      <div class="section-title"><span class="icon">🧂</span> 家里有什么调料？</div>
+      <div class="tag-input-area">
+        <div class="tags-container" id="seasonings-tags"></div>
+        <div class="input-row">
+          <input type="text" id="input-seasoning" placeholder="如：盐、酱油、醋（不填=不检查调料）">
+          <button class="btn-add" onclick="App.addTag('seasonings', 'input-seasoning')">添加</button>
+        </div>
+        <div class="quick-adds" id="quick-seasonings"></div>
+        <div class="saved-row" id="seasoning-save-row"></div>
+      </div>
+    </div>
+
+    <!-- 搜索按钮 -->
+    <button class="btn-primary" id="btn-search" onclick="App.doSearch()" disabled>
+      请先添加食材
+    </button>
+
+    <div class="footer-note">
+      <p>内置 100 道真实家常菜谱 · 打开就能用 · 不需要联网</p>
+    </div>
+  </div>
+
+  <!-- ==================== Page 2: 搜索结果 ==================== -->
+  <div id="page-results" class="page">
+    
+    <div class="results-header">
+      <button class="btn-back" onclick="App.goBack()">←</button>
+      <div>
+        <div class="results-title">可以做的菜</div>
+        <div class="results-count" id="results-count"></div>
+      </div>
+    </div>
+
+    <!-- 快捷筛选 -->
+    <div class="filter-group">
+      <div class="filter-group-title">🔥 快捷筛选</div>
+      <div class="filter-bar">
+        <button class="filter-chip" data-filter-type="noBuy" data-filter-value="true" onclick="App.applyFilter('noBuy')">不用出门买</button>
+        <button class="filter-chip" data-filter-type="allowBuyOne" data-filter-value="true" onclick="App.applyFilter('allowBuyOne')">最多再买1样</button>
+        <button class="filter-chip" data-filter-type="noFire" data-filter-value="true" onclick="App.applyFilter('noFire')">不用开火</button>
+        <button class="filter-chip" data-filter-type="onePot" data-filter-value="true" onclick="App.applyFilter('onePot')">一锅出</button>
+      </div>
+    </div>
+    
+    <div class="filter-group">
+      <div class="filter-group-title">🍽️ 人数</div>
+      <div class="filter-bar">
+        <button class="filter-chip" data-filter-type="servings" data-filter-value="一人食" onclick="App.applyFilter('servings', '一人食')">一人食</button>
+        <button class="filter-chip" data-filter-type="servings" data-filter-value="多人食" onclick="App.applyFilter('servings', '多人食')">多人食</button>
+      </div>
+    </div>
+
+    <div class="filter-group">
+      <div class="filter-group-title">🔪 烹饪方式</div>
+      <div class="filter-bar">
+        <button class="filter-chip" data-filter-type="method" data-filter-value="炒" onclick="App.applyFilter('method', '炒')">炒</button>
+        <button class="filter-chip" data-filter-type="method" data-filter-value="煮" onclick="App.applyFilter('method', '煮')">煮</button>
+        <button class="filter-chip" data-filter-type="method" data-filter-value="蒸" onclick="App.applyFilter('method', '蒸')">蒸</button>
+        <button class="filter-chip" data-filter-type="method" data-filter-value="煎" onclick="App.applyFilter('method', '煎')">煎</button>
+        <button class="filter-chip" data-filter-type="method" data-filter-value="拌" onclick="App.applyFilter('method', '拌')">拌</button>
+        <button class="filter-chip" data-filter-type="method" data-filter-value="焖" onclick="App.applyFilter('method', '焖')">焖/炖</button>
+        <button class="filter-chip" data-filter-type="method" data-filter-value="烤" onclick="App.applyFilter('method', '烤')">烤</button>
+      </div>
+    </div>
+
+    <div class="filter-group">
+      <div class="filter-group-title">🏷️ 菜系</div>
+      <div class="filter-bar">
+        <button class="filter-chip" data-filter-type="cuisine" data-filter-value="家常" onclick="App.applyFilter('cuisine', '家常')">家常</button>
+        <button class="filter-chip" data-filter-type="cuisine" data-filter-value="川菜" onclick="App.applyFilter('cuisine', '川菜')">川菜</button>
+        <button class="filter-chip" data-filter-type="cuisine" data-filter-value="粤菜" onclick="App.applyFilter('cuisine', '粤菜')">粤菜</button>
+        <button class="filter-chip" data-filter-type="cuisine" data-filter-value="日式" onclick="App.applyFilter('cuisine', '日式')">日式</button>
+        <button class="filter-chip" data-filter-type="cuisine" data-filter-value="西式" onclick="App.applyFilter('cuisine', '西式')">西式</button>
+        <button class="filter-chip" data-filter-type="cuisine" data-filter-value="西北" onclick="App.applyFilter('cuisine', '西北')">西北</button>
+        <button class="filter-chip" data-filter-type="cuisine" data-filter-value="湘菜" onclick="App.applyFilter('cuisine', '湘菜')">湘菜</button>
+        <button class="filter-chip" data-filter-type="cuisine" data-filter-value="云贵" onclick="App.applyFilter('cuisine', '云贵')">云贵</button>
+      </div>
+    </div>
+
+    <!-- 菜品列表 -->
+    <div class="recipe-list" id="results-list"></div>
+  </div>
+
+  <!-- ==================== Page 3: 教程详情 ==================== -->
+  <div id="page-detail" class="page">
+    
+    <div class="results-header">
+      <button class="btn-back" onclick="App.goBack()">←</button>
+      <div class="results-title">菜品教程</div>
+    </div>
+
+    <div id="detail-content"></div>
+  </div>
+
+  <!-- All Scripts Inlined -->
+  <script>
+/**
+ * 今天吃啥 - 菜谱数据库
+ * 200+ 道真实家常菜，覆盖各种食材组合
+ *
+ * 数据结构说明：
+ * - name: 菜名
+ * - desc: 一句话描述
+ * - img: emoji
+ * - method: 烹饪方式（炒/煮/蒸/拌/煎/焖/炸/烤/无火）
+ * - time: 预计分钟数
+ * - servings: 几人份
+ * - cuisine: 菜系
+ * - tags: 标签
+ * - ingredients: 食材列表 [{name, amount, required(是否必需)}]
+ * - seasonings: 调料列表 [{name, amount, essential(是否关键)}]
+ * - steps: 步骤
+ * - tips: 小贴士
+ */
+
+const RECIPES = [
+  // ==================== 西红柿系列 ====================
+  {
+    id: 1,
+    name: "西红柿炒蛋",
+    desc: "国民家常菜，怎么做都好吃",
+    img: "🍅",
+    method: "炒",
+    time: 10,
+    servings: 1,
+    cuisine: "家常",
+    tags: ["快手菜", "下饭", "一人食"],
+    bv: "BV1Py4y1S7EF",
+    ingredients: [
+      { name: "西红柿", amount: "2个", required: true },
+      { name: "鸡蛋", amount: "3个", required: true }
+    ],
+    seasonings: [
+      { name: "盐", amount: "适量", essential: true },
+      { name: "食用油", amount: "适量", essential: true },
+      { name: "糖", amount: "少许", essential: false },
+      { name: "葱", amount: "少许", essential: false }
+    ],
+    steps: [
+      "鸡蛋打散，加少许盐搅匀",
+      "西红柿切块（切小块出汁更多）",
+      "锅热油，倒入蛋液，快速划散成大块，盛出备用",
+      "锅中留底油，放入西红柿翻炒出汁",
+      "加少许糖提鲜，炒到软烂",
+      "倒回鸡蛋，翻匀出锅"
+    ],
+    tips: ["蛋液里加一点点水会更嫩", "西红柿先用开水烫一下更容易去皮", "想要汁多可以加一点水焖一会"]
+  },
+  {
+    id: 2,
+    name: "凉拌西红柿",
+    desc: "夏天必备，5分钟搞定",
+    img: "🍅",
+    method: "拌",
+    time: 5,
+    servings: 1,
+    cuisine: "家常",
+    tags: ["无火", "快手菜", "夏日", "一人食", "减脂"],
+    bv: "BV1HW411r7k6",
+    ingredients: [
+      { name: "西红柿", amount: "2个", required: true }
+    ],
+    seasonings: [
+      { name: "糖", amount: "2勺", essential: true },
+      { name: "盐", amount: "少许", essential: false }
+    ],
+    steps: [
+      "西红柿洗净切薄片或块",
+      "撒上白糖拌匀",
+      "冷藏10分钟更好吃"
+    ],
+    tips: ["喜欢酸的可以不加糖", "加一点点盐可以激发甜味"]
+  },
+  {
+    id: 3,
+    name: "西红柿鸡蛋面",
+    desc: "一锅出的温暖主食",
+    img: "🍜",
+    method: "煮",
+    time: 15,
+    servings: 1,
+    cuisine: "家常",
+    tags: ["一锅出", "主食", "一人食"],
+    bv: "BV1K94y1C7HR",
+    ingredients: [
+      { name: "西红柿", amount: "1-2个", required: true },
+      { name: "鸡蛋", amount: "1-2个", required: true },
+      { name: "面条", amount: "1人份", required: true }
+    ],
+    seasonings: [
+      { name: "盐", amount: "适量", essential: true },
+      { name: "食用油", amount: "少许", essential: true },
+      { name: "生抽", amount: "1勺", essential: false },
+      { name: "葱", amount: "少许", essential: false }
+    ],
+    steps: [
+      "西红柿切块，鸡蛋打散",
+      "锅中热油，炒鸡蛋盛出",
+      "锅中再加点油，炒西红柿至出汁",
+      "加水煮开，水量按你想要多少汤来",
+      "下面条，煮至断生",
+      "加入炒好的鸡蛋，调味出锅"
+    ],
+    tips: ["面条不要煮太久，关火后还会在热汤里继续变软"]
+  },
+  {
+    id: 4,
+    name: "番茄鸡蛋盖饭",
+    desc: "酸甜浓郁，浇在米饭上超满足",
+    img: "🍛",
+    method: "炒",
+    time: 12,
+    servings: 1,
+    cuisine: "家常",
+    tags: ["主食", "一人食", "下饭"],
+    bv: "BV15v411B7v1",
+    ingredients: [
+      { name: "西红柿", amount: "2个", required: true },
+      { name: "鸡蛋", amount: "2个", required: true },
+      { name: "米饭", amount: "1碗", required: true }
+    ],
+    seasonings: [
+      { name: "盐", amount: "适量", essential: true },
+      { name: "食用油", amount: "适量", essential: true },
+      { name: "糖", amount: "半勺", essential: false },
+      { name: "番茄酱", amount: "1勺", essential: false }
+    ],
+    steps: [
+      "西红柿切小丁（比炒蛋切更碎），鸡蛋打散",
+      "热锅热油，滑入蛋液炒散盛出",
+      "锅中加油炒西红柿丁，加少许番茄酱翻炒",
+      "炒至浓稠成酱状，加糖和盐调味",
+      "倒回鸡蛋翻匀",
+      "浇在热米饭上"
+    ],
+    tips: ["番茄酱不是必须的但会让颜色和味道更浓", "西红柿切碎一点更容易成酱"]
+  },
+  {
+    id: 5,
+    name: "西红柿蛋汤",
+    desc: "清淡开胃的家常汤",
+    img: "🥣",
+    method: "煮",
+    time: 10,
+    servings: 2,
+    cuisine: "家常",
+    tags: ["汤", "快手菜", "清淡"],
+    bv: "BV1UK411n76L",
+    ingredients: [
+      { name: "西红柿", amount: "1个", required: true },
+      { name: "鸡蛋", amount: "2个", required: true }
+    ],
+    seasonings: [
+      { name: "盐", amount: "适量", essential: true },
+      { name: "香油", amount: "几滴", essential: false },
+      { name: "葱", amount: "少许", essential: false }
+    ],
+    steps: [
+      "西红柿切小块，鸡蛋打散",
+      "锅中加水烧开，放入西红柿煮2分钟",
+      "转小火，缓缓倒入蛋液，边倒边用筷子划圈",
+      "蛋花浮起后加盐调味",
+      "淋几滴香油，撒葱花"
+    ],
+    tips: ["蛋液要慢慢倒，才能形成漂亮的蛋花", "水开后转小火再倒蛋液"]
+  },
+  {
+    id: 6,
+    name: "西红柿炖豆腐",
+    desc: "酸甜入味，素菜也能很下饭",
+    img: "🍅",
+    method: "焖",
+    time: 15,
+    servings: 2,
+    cuisine: "家常",
+    tags: ["下饭", "素菜", "一人食"],
+    bv: "BV14o4y1M7ec",
+    ingredients: [
+      { name: "西红柿", amount: "2个", required: true },
+      { name: "豆腐", amount: "1块", required: true }
+    ],
+    seasonings: [
+      { name: "盐", amount: "适量", essential: true },
+      { name: "食用油", amount: "适量", essential: true },
+      { name: "生抽", amount: "1勺", essential: false },
+      { name: "糖", amount: "少许", essential: false },
+      { name: "蒜", amount: "2瓣", essential: false }
+    ],
+    steps: [
+      "豆腐切小块，西红柿切块",
+      "锅中热油，放蒜末爆香",
+      "放入西红柿炒出汁",
+      "加入豆腐，轻轻翻动",
+      "加少量水、生抽、盐，小火焖5分钟",
+      "大火收汁"
+    ],
+    tips: ["豆腐用嫩豆腐口感更好，但要轻拿轻放", "老豆腐先煎一下再炖不容易碎"]
+  },
+  {
+    id: 7,
+    name: "西红柿土豆汤",
+    desc: "浓郁酸香，暖胃又管饱",
+    img: "🥣",
+    method: "煮",
+    time: 20,
+    servings: 2,
+    cuisine: "家常",
+    tags: ["汤", "一人食"],
+    bv: "BV1ks411i7jR",
+    ingredients: [
+      { name: "西红柿", amount: "2个", required: true },
+      { name: "土豆", amount: "1个", required: true }
+    ],
+    seasonings: [
+      { name: "盐", amount: "适量", essential: true },
+      { name: "食用油", amount: "少许", essential: true },
+      { name: "葱", amount: "少许", essential: false }
+    ],
+    steps: [
+      "西红柿切块，土豆去皮切小块",
+      "锅中热油，炒西红柿至出汁",
+      "加入土豆翻炒1分钟",
+      "加水没过食材，大火煮开转小火",
+      "煮15分钟至土豆软烂",
+      "加盐调味，撒葱花"
+    ],
+    tips: ["土豆切小块更容易煮烂", "喜欢浓稠可以把部分土豆压碎"]
+  },
+  // ==================== 黄瓜系列 ====================
+  {
+    id: 8,
+    name: "拍黄瓜",
+    desc: "拍一拍就能上桌的凉菜之王",
+    img: "🥒",
+    method: "拌",
+    time: 5,
+    servings: 1,
+    cuisine: "家常",
+    tags: ["无火", "快手菜", "凉菜", "一人食", "夏日"],
+    bv: "BV1W541117u9",
+    ingredients: [
+      { name: "黄瓜", amount: "2根", required: true }
+    ],
+    seasonings: [
+      { name: "蒜", amount: "3-4瓣", essential: true },
+      { name: "盐", amount: "适量", essential: true },
+      { name: "醋", amount: "2勺", essential: true },
+      { name: "生抽", amount: "1勺", essential: false },
+      { name: "辣椒油", amount: "适量", essential: false },
+      { name: "香油", amount: "几滴", essential: false },
+      { name: "糖", amount: "少许", essential: false }
+    ],
+    steps: [
+      "黄瓜用刀面拍碎，手掰成小段",
+      "蒜切末或拍碎",
+      "碗中调汁：醋+生抽+盐+糖+蒜末+辣椒油",
+      "浇在黄瓜上拌匀",
+      "冷藏10分钟更入味"
+    ],
+    tips: ["拍比切更容易入味", "蒜一定要多放，这是灵魂", "提前拌好放冰箱冰一下更好吃"]
+  },
+  {
+    id: 9,
+    name: "黄瓜炒蛋",
+    desc: "清爽鲜嫩的快手菜",
+    img: "🥒",
+    method: "炒",
+    time: 8,
+    servings: 1,
+    cuisine: "家常",
+    tags: ["快手菜", "清淡", "一人食"],
+    bv: "BV1QV411G7GU",
+    ingredients: [
+      { name: "黄瓜", amount: "1根", required: true },
+      { name: "鸡蛋", amount: "3个", required: true }
+    ],
+    seasonings: [
+      { name: "盐", amount: "适量", essential: true },
+      { name: "食用油", amount: "适量", essential: true }
+    ],
+    steps: [
+      "黄瓜切菱形片，鸡蛋打散加少许盐",
+      "锅中热油，倒入蛋液炒至凝固盛出",
+      "锅中再加少许油，放黄瓜片大火翻炒",
+      "黄瓜断生后倒回鸡蛋，翻匀出锅"
+    ],
+    tips: ["黄瓜要大火快炒，保持脆嫩", "出锅前不要再加盐，蛋里已经有了"]
+  },
+  {
+    id: 10,
+    name: "黄瓜拌粉丝",
+    desc: "爽口开胃的夏日凉菜",
+    img: "🥒",
+    method: "拌",
+    time: 10,
+    servings: 1,
+    cuisine: "家常",
+    tags: ["凉菜", "快手菜", "一人食", "夏日"],
+    bv: "BV1s4411n7A7",
+    ingredients: [
+      { name: "黄瓜", amount: "1根", required: true },
+      { name: "粉丝", amount: "1把", required: true }
+    ],
+    seasonings: [
+      { name: "蒜", amount: "3瓣", essential: true },
+      { name: "醋", amount: "2勺", essential: true },
+      { name: "生抽", amount: "1勺", essential: true },
+      { name: "盐", amount: "适量", essential: true },
+      { name: "辣椒油", amount: "适量", essential: false },
+      { name: "香油", amount: "少许", essential: false }
+    ],
+    steps: [
+      "粉丝用开水泡软，过凉水沥干",
+      "黄瓜切丝或切片",
+      "蒜切末，调料碗中混合所有调味料",
+      "粉丝、黄瓜和调料拌匀即可"
+    ],
+    tips: ["粉丝不要泡太久会烂", "可以加点花生碎增加口感"]
+  },
+  {
+    id: 11,
+    name: "凉拌黄瓜豆腐皮",
+    desc: "蛋白质满满的爽口凉菜",
+    img: "🥒",
+    method: "拌",
+    time: 8,
+    servings: 1,
+    cuisine: "家常",
+    tags: ["凉菜", "快手菜", "一人食", "减脂"],
+    bv: "BV1Bg4y1t7xA",
+    ingredients: [
+      { name: "黄瓜", amount: "1根", required: true },
+      { name: "豆腐皮", amount: "2张", required: true }
+    ],
+    seasonings: [
+      { name: "蒜", amount: "3瓣", essential: true },
+      { name: "醋", amount: "2勺", essential: true },
+      { name: "生抽", amount: "1勺", essential: true },
+      { name: "盐", amount: "适量", essential: true },
+      { name: "辣椒油", amount: "适量", essential: false },
+      { name: "香油", amount: "少许", essential: false }
+    ],
+    steps: [
+      "豆腐皮切丝，开水焯一下过凉水",
+      "黄瓜切丝",
+      "调料碗：蒜末+醋+生抽+盐+辣椒油+香油",
+      "所有食材和调料拌匀"
+    ],
+    tips: ["豆腐皮焯水可以去除豆腥味"]
+  },
+  // ==================== 土豆系列 ====================
+  {
+    id: 12,
+    name: "酸辣土豆丝",
+    desc: "国民下饭菜，家家都会做",
+    img: "🥔",
+    method: "炒",
+    time: 12,
+    servings: 1,
+    cuisine: "家常",
+    tags: ["下饭", "快手菜", "一人食"],
+    bv: "BV1554y1f7jK",
+    ingredients: [
+      { name: "土豆", amount: "2个", required: true }
+    ],
+    seasonings: [
+      { name: "醋", amount: "2勺", essential: true },
+      { name: "盐", amount: "适量", essential: true },
+      { name: "食用油", amount: "适量", essential: true },
+      { name: "干辣椒", amount: "3-4个", essential: false },
+      { name: "花椒", amount: "少许", essential: false },
+      { name: "蒜", amount: "2瓣", essential: false },
+      { name: "葱", amount: "少许", essential: false }
+    ],
+    steps: [
+      "土豆去皮切细丝，泡水洗去淀粉",
+      "锅热油，放干辣椒和花椒爆香",
+      "大火倒入土豆丝快速翻炒",
+      "沿锅边淋醋，继续翻炒",
+      "加盐调味，炒至土豆丝断生但仍脆",
+      "出锅前加蒜末翻匀"
+    ],
+    tips: ["土豆丝一定要泡水洗掉淀粉，炒出来才脆", "全程大火，不要盖锅盖", "醋要沿锅边淋，遇热挥发香味更好"]
+  },
+  {
+    id: 13,
+    name: "土豆泥",
+    desc: "绵密软糯，百搭配菜",
+    img: "🥔",
+    method: "煮",
+    time: 20,
+    servings: 1,
+    cuisine: "西式",
+    tags: ["一人食", "简单", "减脂"],
+    bv: "BV1jz411v7tg",
+    ingredients: [
+      { name: "土豆", amount: "2个", required: true }
+    ],
+    seasonings: [
+      { name: "盐", amount: "适量", essential: true },
+      { name: "黑胡椒", amount: "适量", essential: false }
+    ],
+    steps: [
+      "土豆去皮切块，冷水下锅",
+      "大火煮开转中火，煮15分钟至筷子能轻松插透",
+      "沥干水分，用勺子或叉子压成泥",
+      "加盐和黑胡椒调味"
+    ],
+    tips: ["有牛奶和黄油的话加一点会更香滑", "不要用搅拌机打，会变成胶状"]
+  },
+  {
+    id: 14,
+    name: "炕土豆",
+    desc: "外焦里糯的街边小吃",
+    img: "🥔",
+    method: "煎",
+    time: 15,
+    servings: 1,
+    cuisine: "云贵",
+    tags: ["小吃", "一人食"],
+    bv: "BV14x411H7H7",
+    ingredients: [
+      { name: "土豆", amount: "3-4个小土豆", required: true }
+    ],
+    seasonings: [
+      { name: "盐", amount: "适量", essential: true },
+      { name: "食用油", amount: "多一些", essential: true },
+      { name: "辣椒粉", amount: "适量", essential: false },
+      { name: "孜然", amount: "适量", essential: false },
+      { name: "葱", amount: "少许", essential: false }
+    ],
+    steps: [
+      "小土豆洗净对半切（大的切四块）",
+      "冷水下锅煮8分钟至七八分熟，沥干",
+      "平底锅多放点油，小火放入土豆",
+      "不要急着翻，煎至底面金黄再翻面",
+      "全面金黄后撒盐、辣椒粉、孜然",
+      "撒葱花出锅"
+    ],
+    tips: ["土豆要先煮再煎，不然里面不熟", "耐心小火煎，不要老翻动"]
+  },
+  {
+    id: 15,
+    name: "土豆咖喱饭",
+    desc: "浓郁咖喱配白饭，一锅满足",
+    img: "🍛",
+    method: "焖",
+    time: 25,
+    servings: 2,
+    cuisine: "日式",
+    tags: ["一锅出", "主食", "多人食"],
+    bv: "BV1mt411Q71y",
+    ingredients: [
+      { name: "土豆", amount: "2个", required: true },
+      { name: "胡萝卜", amount: "1根", required: false },
+      { name: "米饭", amount: "2碗", required: true }
+    ],
+    seasonings: [
+      { name: "咖喱块", amount: "2-3块", essential: true },
+      { name: "食用油", amount: "适量", essential: true },
+      { name: "盐", amount: "适量", essential: false }
+    ],
+    steps: [
+      "土豆、胡萝卜去皮切滚刀块",
+      "锅中热油，翻炒蔬菜2分钟",
+      "加水没过食材，大火煮开",
+      "转小火，放入咖喱块搅拌融化",
+      "小火炖15分钟至浓稠",
+      "浇在米饭上"
+    ],
+    tips: ["咖喱块要关火后再放，搅匀再开火", "可以加鸡肉或猪肉更丰富"]
+  },
+  {
+    id: 16,
+    name: "土豆炖鸡",
+    desc: "土豆吸满鸡汤汁，比肉还好吃",
+    img: "🍗",
+    method: "焖",
+    time: 35,
+    servings: 3,
+    cuisine: "家常",
+    tags: ["硬菜", "下饭", "多人食", "一锅出"],
+    bv: "BV1zE411i7R1",
+    ingredients: [
+      { name: "土豆", amount: "2个", required: true },
+      { name: "鸡肉", amount: "半只", required: true }
+    ],
+    seasonings: [
+      { name: "生抽", amount: "2勺", essential: true },
+      { name: "老抽", amount: "1勺", essential: true },
+      { name: "料酒", amount: "1勺", essential: true },
+      { name: "盐", amount: "适量", essential: true },
+      { name: "食用油", amount: "适量", essential: true },
+      { name: "姜", amount: "几片", essential: false },
+      { name: "蒜", amount: "3瓣", essential: false },
+      { name: "糖", amount: "少许", essential: false }
+    ],
+    steps: [
+      "鸡肉剁块焯水去血沫，土豆切块",
+      "锅中热油，放姜蒜爆香",
+      "放入鸡块翻炒变色",
+      "加料酒、生抽、老抽、糖翻匀",
+      "加水没过食材，大火煮开转小火",
+      "炖20分钟后加入土豆",
+      "继续炖15分钟至土豆软烂，大火收汁"
+    ],
+    tips: ["土豆后放，不然炖太久会碎", "最后大火收汁让每一块都挂上酱色"]
+  },
+  // ==================== 鸡蛋系列 ====================
+  {
+    id: 17,
+    name: "鸡蛋羹",
+    desc: "嫩滑如布丁的蒸蛋",
+    img: "🥚",
+    method: "蒸",
+    time: 15,
+    servings: 1,
+    cuisine: "家常",
+    tags: ["一人食", "清淡", "养胃"],
+    bv: "BV1XxpserEmr",
+    ingredients: [
+      { name: "鸡蛋", amount: "2个", required: true }
+    ],
+    seasonings: [
+      { name: "盐", amount: "少许", essential: true },
+      { name: "香油", amount: "几滴", essential: false },
+      { name: "生抽", amount: "少许", essential: false }
+    ],
+    steps: [
+      "鸡蛋打散，加1.5倍温水搅匀",
+      "加少许盐搅匀，过滤掉泡沫",
+      "盖上保鲜膜（戳几个小洞），或盖个盘子",
+      "水开后放入蒸锅，中火蒸12分钟",
+      "出锅淋香油和生抽"
+    ],
+    tips: ["蛋水比例1:1.5是关键，太多水会太稀", "一定要用温水不要用冷水", "蒸的时候盖东西防止水滴进去变蜂窝"]
+  },
+  {
+    id: 18,
+    name: "厚蛋烧",
+    desc: "日式早餐的仪式感",
+    img: "🥚",
+    method: "煎",
+    time: 10,
+    servings: 1,
+    cuisine: "日式",
+    tags: ["一人食", "早餐", "快手菜"],
+    bv: "BV1RW411q79J",
+    ingredients: [
+      { name: "鸡蛋", amount: "3个", required: true }
+    ],
+    seasonings: [
+      { name: "盐", amount: "少许", essential: true },
+      { name: "食用油", amount: "少许", essential: true },
+      { name: "糖", amount: "1小勺", essential: false },
+      { name: "生抽", amount: "几滴", essential: false }
+    ],
+    steps: [
+      "鸡蛋打散，加盐和少许糖搅匀",
+      "平底锅小火刷薄油",
+      "倒入薄薄一层蛋液，半凝固时从一边卷起",
+      "卷好推到一边，再倒一层蛋液",
+      "重复3-4次，每次卷包上一层",
+      "切段装盘"
+    ],
+    tips: ["全程小火，不然蛋皮会焦", "每层不用完全凝固就可以卷", "没有方形锅用圆锅也行，切掉边就好"]
+  },
+  {
+    id: 19,
+    name: "蛋炒饭",
+    desc: "剩米饭的终极归宿",
+    img: "🍚",
+    method: "炒",
+    time: 8,
+    servings: 1,
+    cuisine: "家常",
+    tags: ["主食", "快手菜", "一人食", "下饭"],
+    bv: "BV1gt411o78F",
+    ingredients: [
+      { name: "鸡蛋", amount: "2个", required: true },
+      { name: "米饭", amount: "1碗隔夜饭", required: true }
+    ],
+    seasonings: [
+      { name: "盐", amount: "适量", essential: true },
+      { name: "食用油", amount: "多一些", essential: true },
+      { name: "葱", amount: "1根", essential: false },
+      { name: "生抽", amount: "少许", essential: false }
+    ],
+    steps: [
+      "鸡蛋打散，葱切葱花",
+      "锅中多放油烧热，倒入蛋液",
+      "蛋液半凝固时倒入米饭",
+      "大火翻炒，用铲子把饭粒打散",
+      "炒到每粒米都被蛋液包裹、粒粒分明",
+      "加盐和少许生抽，撒葱花出锅"
+    ],
+    tips: ["隔夜饭效果最好，当天的米饭太黏", "油一定要多，不然粘锅", "全程大火，不停翻炒"]
+  },
+  {
+    id: 20,
+    name: "鸡蛋灌饼",
+    desc: "街边早餐摊的经典",
+    img: "🥞",
+    method: "煎",
+    time: 15,
+    servings: 1,
+    cuisine: "家常",
+    tags: ["主食", "一人食", "早餐"],
+    bv: "BV1J5411T7Wa",
+    ingredients: [
+      { name: "鸡蛋", amount: "1个", required: true },
+      { name: "面粉", amount: "100g", required: true }
+    ],
+    seasonings: [
+      { name: "盐", amount: "适量", essential: true },
+      { name: "食用油", amount: "适量", essential: true }
+    ],
+    steps: [
+      "面粉加温水和少许盐揉成面团，醒15分钟",
+      "擀成薄饼，刷一层油，折叠再擀",
+      "平底锅小火，少油煎饼",
+      "一面鼓泡时戳个口，灌入打散的蛋液",
+      "翻面煎至两面金黄"
+    ],
+    tips: ["面团要软一点，不然不容易鼓泡", "也可以用现成的手抓饼皮代替"]
+  },
+  {
+    id: 21,
+    name: "蛋花粥",
+    desc: "养胃暖身的清粥",
+    img: "🥣",
+    method: "煮",
+    time: 25,
+    servings: 1,
+    cuisine: "家常",
+    tags: ["主食", "一人食", "养胃", "早餐"],
+    bv: "BV1TF411c78u",
+    ingredients: [
+      { name: "鸡蛋", amount: "1个", required: true },
+      { name: "米饭", amount: "1碗", required: true }
+    ],
+    seasonings: [
+      { name: "盐", amount: "适量", essential: true },
+      { name: "香油", amount: "几滴", essential: false },
+      { name: "葱", amount: "少许", essential: false }
+    ],
+    steps: [
+      "米饭加水煮开（剩饭做粥更快）",
+      "转小火慢煮至粘稠",
+      "鸡蛋打散，缓缓淋入粥中",
+      "搅拌成蛋花，加盐调味",
+      "淋香油，撒葱花"
+    ],
+    tips: ["用剩饭煮粥比生米快很多", "想更浓稠多煮一会就行"]
+  },
+  // ==================== 豆腐系列 ====================
+  {
+    id: 22,
+    name: "麻婆豆腐",
+    desc: "麻辣鲜香的川菜经典",
+    img: "🌶️",
+    method: "炒",
+    time: 15,
+    servings: 2,
+    cuisine: "川菜",
+    tags: ["下饭", "一人食"],
+    bv: "BV1Qa4y1c7sF",
+    ingredients: [
+      { name: "豆腐", amount: "1块", required: true },
+      { name: "猪肉", amount: "50g肉末", required: false }
+    ],
+    seasonings: [
+      { name: "豆瓣酱", amount: "1勺", essential: true },
+      { name: "食用油", amount: "适量", essential: true },
+      { name: "盐", amount: "适量", essential: true },
+      { name: "花椒", amount: "适量", essential: false },
+      { name: "蒜", amount: "2瓣", essential: false },
+      { name: "生抽", amount: "1勺", essential: false },
+      { name: "淀粉", amount: "水淀粉勾芡", essential: false }
+    ],
+    steps: [
+      "豆腐切小方块，开水焯一下沥干",
+      "锅中热油，炒散肉末（没有可省略）",
+      "加豆瓣酱小火炒出红油",
+      "加少量水煮开，放入豆腐",
+      "小火炖3分钟让豆腐入味",
+      "淋水淀粉勾芡，撒花椒粉"
+    ],
+    tips: ["豆腐焯水不容易碎", "没有肉末也可以做成素麻婆豆腐", "豆瓣酱本身很咸，盐少放"]
+  },
+  {
+    id: 23,
+    name: "皮蛋豆腐",
+    desc: "清凉爽口的经典凉菜",
+    img: "🥚",
+    method: "拌",
+    time: 5,
+    servings: 2,
+    cuisine: "家常",
+    tags: ["无火", "快手菜", "凉菜", "一人食"],
+    bv: "BV1ev4y1M7kS",
+    ingredients: [
+      { name: "豆腐", amount: "1块（嫩豆腐）", required: true },
+      { name: "皮蛋", amount: "2个", required: true }
+    ],
+    seasonings: [
+      { name: "生抽", amount: "2勺", essential: true },
+      { name: "香油", amount: "1勺", essential: true },
+      { name: "醋", amount: "少许", essential: false },
+      { name: "蒜", amount: "2瓣", essential: false },
+      { name: "辣椒油", amount: "适量", essential: false }
+    ],
+    steps: [
+      "嫩豆腐切块铺盘",
+      "皮蛋剥壳切小块，摆在豆腐上",
+      "调汁：生抽+醋+香油+蒜末+辣椒油",
+      "浇在豆腐上即可"
+    ],
+    tips: ["用内酯豆腐口感最嫩", "皮蛋用线切不容易碎"]
+  },
+  {
+    id: 24,
+    name: "家常豆腐",
+    desc: "煎到金黄的豆腐配浓香酱汁",
+    img: "🧈",
+    method: "煎",
+    time: 15,
+    servings: 2,
+    cuisine: "家常",
+    tags: ["下饭", "一人食"],
+    bv: "BV1tV4y187oV",
+    ingredients: [
+      { name: "豆腐", amount: "1块（老豆腐）", required: true }
+    ],
+    seasonings: [
+      { name: "食用油", amount: "适量", essential: true },
+      { name: "生抽", amount: "2勺", essential: true },
+      { name: "蚝油", amount: "1勺", essential: false },
+      { name: "盐", amount: "适量", essential: true },
+      { name: "蒜", amount: "2瓣", essential: false },
+      { name: "葱", amount: "少许", essential: false }
+    ],
+    steps: [
+      "老豆腐切厚片",
+      "平底锅多放油，中火煎至两面金黄",
+      "推到一边，放蒜末爆香",
+      "加生抽、蚝油、少许水",
+      "让豆腐在酱汁中焖一会收汁",
+      "撒葱花出锅"
+    ],
+    tips: ["一定要用老豆腐，嫩豆腐煎容易碎", "煎的时候不要急着翻面"]
+  },
+  // ==================== 青菜系列 ====================
+  {
+    id: 25,
+    name: "蒜蓉炒青菜",
+    desc: "最简单的蔬菜做法",
+    img: "🥬",
+    method: "炒",
+    time: 5,
+    servings: 1,
+    cuisine: "家常",
+    tags: ["快手菜", "一人食", "清淡", "减脂"],
+    bv: "BV1Bi4y1m7pN",
+    ingredients: [
+      { name: "青菜", amount: "1把（任何绿叶菜）", required: true }
+    ],
+    seasonings: [
+      { name: "蒜", amount: "3瓣", essential: true },
+      { name: "盐", amount: "适量", essential: true },
+      { name: "食用油", amount: "适量", essential: true }
+    ],
+    steps: [
+      "青菜洗净切段，蒜切末",
+      "锅中热油，放蒜末爆香",
+      "大火倒入青菜翻炒",
+      "炒至断生变软，加盐调味",
+      "出锅"
+    ],
+    tips: ["全程大火快炒，青菜才绿", "先放菜梗再放叶子", "不要炒太久会出水变黄"]
+  },
+  {
+    id: 26,
+    name: "上汤娃娃菜",
+    desc: "清甜鲜美的粤式蔬菜",
+    img: "🥬",
+    method: "煮",
+    time: 10,
+    servings: 2,
+    cuisine: "粤菜",
+    tags: ["清淡", "多人食"],
+    bv: "BV1NK4y1e7Yj",
+    ingredients: [
+      { name: "白菜", amount: "1棵（娃娃菜最佳）", required: true },
+      { name: "鸡蛋", amount: "1个", required: false }
+    ],
+    seasonings: [
+      { name: "盐", amount: "适量", essential: true },
+      { name: "食用油", amount: "适量", essential: true },
+      { name: "蒜", amount: "3瓣", essential: false }
+    ],
+    steps: [
+      "白菜对半切开，洗净",
+      "烧一锅水焯一下白菜，沥干摆盘",
+      "另起锅，热油炒蒜末",
+      "加水（或高汤）煮开",
+      "加盐调味，淋蛋液做蛋花",
+      "浇在白菜上"
+    ],
+    tips: ["有皮蛋切碎放进去味道更好", "没有高汤用清水也行"]
+  },
+  {
+    id: 27,
+    name: "醋溜白菜",
+    desc: "酸辣爽脆的东北名菜",
+    img: "🥬",
+    method: "炒",
+    time: 8,
+    servings: 2,
+    cuisine: "家常",
+    tags: ["下饭", "快手菜", "一人食"],
+    bv: "BV1GL4y1W7ga",
+    ingredients: [
+      { name: "白菜", amount: "半棵", required: true }
+    ],
+    seasonings: [
+      { name: "醋", amount: "2勺", essential: true },
+      { name: "盐", amount: "适量", essential: true },
+      { name: "食用油", amount: "适量", essential: true },
+      { name: "干辣椒", amount: "3个", essential: false },
+      { name: "生抽", amount: "1勺", essential: false },
+      { name: "糖", amount: "少许", essential: false }
+    ],
+    steps: [
+      "白菜叶和帮分开，手撕成小块",
+      "锅热油，放干辣椒爆香",
+      "先下白菜帮大火炒1分钟",
+      "再下白菜叶翻炒",
+      "沿锅边淋醋、加生抽、盐、糖",
+      "翻匀即出锅"
+    ],
+    tips: ["帮和叶分开放，帮先炒叶后放", "大火快炒不要出水"]
+  },
+  {
+    id: 28,
+    name: "手撕包菜",
+    desc: "手撕比刀切更入味的快手菜",
+    img: "🥬",
+    method: "炒",
+    time: 8,
+    servings: 2,
+    cuisine: "家常",
+    tags: ["下饭", "快手菜", "一人食"],
+    bv: "BV1up411R7Qj",
+    ingredients: [
+      { name: "包菜", amount: "半个", required: true }
+    ],
+    seasonings: [
+      { name: "食用油", amount: "适量", essential: true },
+      { name: "盐", amount: "适量", essential: true },
+      { name: "醋", amount: "1勺", essential: false },
+      { name: "干辣椒", amount: "3个", essential: false },
+      { name: "蒜", amount: "2瓣", essential: false },
+      { name: "生抽", amount: "1勺", essential: false }
+    ],
+    steps: [
+      "包菜手撕成小块，洗净沥干",
+      "锅中热油，放干辣椒和蒜片爆香",
+      "大火倒入包菜快炒",
+      "沿锅边淋醋和生抽",
+      "加盐翻匀，炒至包菜微微变软但仍脆"
+    ],
+    tips: ["一定要手撕不要切，断面更容易入味", "包菜要沥干水，不然炒出来水哒哒的"]
+  },
+  {
+    id: 29,
+    name: "虎皮青椒",
+    desc: "把青椒煎出虎皮纹才好吃",
+    img: "🌶️",
+    method: "煎",
+    time: 10,
+    servings: 1,
+    cuisine: "家常",
+    tags: ["下饭", "快手菜", "一人食"],
+    bv: "BV1x441127Hk",
+    ingredients: [
+      { name: "青椒", amount: "5-6个", required: true }
+    ],
+    seasonings: [
+      { name: "食用油", amount: "适量", essential: true },
+      { name: "生抽", amount: "2勺", essential: true },
+      { name: "醋", amount: "1勺", essential: true },
+      { name: "盐", amount: "适量", essential: true },
+      { name: "蒜", amount: "2瓣", essential: false },
+      { name: "糖", amount: "少许", essential: false }
+    ],
+    steps: [
+      "青椒去籽，整个或对半切",
+      "锅中少油，放入青椒按压",
+      "中火煎至表面起皱皮（虎皮纹）",
+      "翻面继续煎",
+      "加蒜末、生抽、醋、盐、糖",
+      "翻炒均匀出锅"
+    ],
+    tips: ["要干锅煎，不加水", "用铲子按压青椒帮助出虎皮纹"]
+  },
+  {
+    id: 30,
+    name: "地三鲜",
+    desc: "东北经典，三种蔬菜的黄金搭配",
+    img: "🍆",
+    method: "炒",
+    time: 20,
+    servings: 2,
+    cuisine: "家常",
+    tags: ["下饭", "多人食", "素菜"],
+    bv: "BV1GJ411z7mT",
+    ingredients: [
+      { name: "茄子", amount: "1个", required: true },
+      { name: "土豆", amount: "1个", required: true },
+      { name: "青椒", amount: "2个", required: true }
+    ],
+    seasonings: [
+      { name: "食用油", amount: "多一些", essential: true },
+      { name: "生抽", amount: "2勺", essential: true },
+      { name: "蚝油", amount: "1勺", essential: false },
+      { name: "盐", amount: "适量", essential: true },
+      { name: "蒜", amount: "3瓣", essential: false },
+      { name: "淀粉", amount: "水淀粉勾芡", essential: false }
+    ],
+    steps: [
+      "茄子切滚刀块用盐腌10分钟挤出水",
+      "土豆切块，青椒切块",
+      "锅多放油，先炸土豆至金黄捞出",
+      "再放茄子炸软捞出",
+      "锅留底油，爆香蒜末",
+      "倒回三样食材，加生抽、蚝油、盐翻匀",
+      "淋水淀粉勾薄芡"
+    ],
+    tips: ["茄子提前用盐腌会少吸油", "嫌炸麻烦可以用空气炸锅"]
+  },
+  // ==================== 肉类 ====================
+  {
+    id: 31,
+    name: "可乐鸡翅",
+    desc: "甜甜的零失败硬菜",
+    img: "🍗",
+    method: "焖",
+    time: 25,
+    servings: 2,
+    cuisine: "家常",
+    tags: ["硬菜", "零失败", "多人食"],
+    bv: "BV1pJ411v7S9",
+    ingredients: [
+      { name: "鸡翅", amount: "8-10个", required: true }
+    ],
+    seasonings: [
+      { name: "生抽", amount: "2勺", essential: true },
+      { name: "老抽", amount: "1勺", essential: true },
+      { name: "食用油", amount: "少许", essential: true },
+      { name: "姜", amount: "几片", essential: false },
+      { name: "料酒", amount: "1勺", essential: false }
+    ],
+    steps: [
+      "鸡翅两面划几刀方便入味",
+      "冷水下锅焯水去血沫，捞出",
+      "锅中少油，放鸡翅煎至两面微黄",
+      "加姜片、料酒翻炒",
+      "倒入可乐没过鸡翅",
+      "加生抽、老抽",
+      "大火煮开转小火焖20分钟",
+      "最后大火收汁至浓稠"
+    ],
+    tips: ["一定要用普通可乐，不要用零度", "收汁时要经常翻动防止糊底", "没有可乐可以用雪碧，味道也不错"]
+  },
+  {
+    id: 32,
+    name: "青椒炒肉丝",
+    desc: "最家常的下饭菜",
+    img: "🌶️",
+    method: "炒",
+    time: 12,
+    servings: 1,
+    cuisine: "家常",
+    tags: ["下饭", "一人食", "快手菜"],
+    bv: "BV1GM41157Hz",
+    ingredients: [
+      { name: "青椒", amount: "3个", required: true },
+      { name: "猪肉", amount: "150g", required: true }
+    ],
+    seasonings: [
+      { name: "生抽", amount: "1勺", essential: true },
+      { name: "盐", amount: "适量", essential: true },
+      { name: "食用油", amount: "适量", essential: true },
+      { name: "料酒", amount: "少许", essential: false },
+      { name: "淀粉", amount: "少许腌肉用", essential: false },
+      { name: "蒜", amount: "2瓣", essential: false }
+    ],
+    steps: [
+      "猪肉切丝，加生抽、料酒、淀粉抓匀腌10分钟",
+      "青椒切丝",
+      "锅中热油，大火滑炒肉丝至变色盛出",
+      "锅中加油，放蒜末和青椒大火翻炒",
+      "倒回肉丝翻匀，加盐出锅"
+    ],
+    tips: ["肉丝要顺着纹路切才嫩", "淀粉抓匀锁住水分"]
+  },
+  {
+    id: 33,
+    name: "红烧肉",
+    desc: "肥而不腻，入口即化",
+    img: "🥩",
+    method: "焖",
+    time: 60,
+    servings: 3,
+    cuisine: "家常",
+    tags: ["硬菜", "下饭", "多人食"],
+    bv: "BV1Us411H7Nw",
+    ingredients: [
+      { name: "猪肉", amount: "500g五花肉", required: true }
+    ],
+    seasonings: [
+      { name: "生抽", amount: "3勺", essential: true },
+      { name: "老抽", amount: "1勺", essential: true },
+      { name: "料酒", amount: "2勺", essential: true },
+      { name: "糖", amount: "2勺（炒糖色）", essential: true },
+      { name: "食用油", amount: "少许", essential: true },
+      { name: "姜", amount: "几片", essential: false },
+      { name: "八角", amount: "2个", essential: false },
+      { name: "桂皮", amount: "1小块", essential: false }
+    ],
+    steps: [
+      "五花肉切3cm见方块，冷水下锅焯水",
+      "锅中少油，加糖小火炒至起泡变色（糖色）",
+      "放入肉块翻炒裹上糖色",
+      "加姜片、八角、桂皮、料酒",
+      "加生抽、老抽翻匀",
+      "加热水没过肉，大火煮开",
+      "转小火焖45分钟-1小时",
+      "大火收汁至浓稠"
+    ],
+    tips: ["炒糖色时小火，不然会苦", "一定要加热水不要冷水", "时间越久越入味"]
+  },
+  {
+    id: 34,
+    name: "蒜苔炒肉",
+    desc: "脆嫩蒜苔配滑嫩猪肉",
+    img: "🌿",
+    method: "炒",
+    time: 10,
+    servings: 1,
+    cuisine: "家常",
+    tags: ["下饭", "一人食", "快手菜"],
+    bv: "BV1Wo4y1V7HT",
+    ingredients: [
+      { name: "蒜苔", amount: "1把", required: true },
+      { name: "猪肉", amount: "100g", required: true }
+    ],
+    seasonings: [
+      { name: "生抽", amount: "1勺", essential: true },
+      { name: "盐", amount: "适量", essential: true },
+      { name: "食用油", amount: "适量", essential: true },
+      { name: "料酒", amount: "少许", essential: false }
+    ],
+    steps: [
+      "蒜苔切3cm段，猪肉切片",
+      "肉片加生抽、料酒腌一下",
+      "锅热油，大火炒肉至变色盛出",
+      "锅中加油，放蒜苔段大火炒",
+      "加少量水焖1分钟让蒜苔熟透",
+      "倒回肉片翻匀，加盐出锅"
+    ],
+    tips: ["蒜苔要大火快炒才脆", "蒜苔不容易熟可以加一丁点水闷一下"]
+  },
+  {
+    id: 35,
+    name: "回锅肉",
+    desc: "川菜之王，肥肉的灵魂吃法",
+    img: "🥩",
+    method: "炒",
+    time: 20,
+    servings: 2,
+    cuisine: "川菜",
+    tags: ["硬菜", "下饭", "多人食"],
+    bv: "BV1t8TCzTEQr",
+    ingredients: [
+      { name: "猪肉", amount: "300g五花肉", required: true },
+      { name: "青椒", amount: "2个", required: false },
+      { name: "蒜苗", amount: "1把", required: false }
+    ],
+    seasonings: [
+      { name: "豆瓣酱", amount: "1大勺", essential: true },
+      { name: "食用油", amount: "少许", essential: true },
+      { name: "生抽", amount: "1勺", essential: false },
+      { name: "糖", amount: "少许", essential: false },
+      { name: "料酒", amount: "1勺", essential: false },
+      { name: "姜", amount: "几片", essential: false }
+    ],
+    steps: [
+      "五花肉整块冷水下锅，加姜片、料酒煮20分钟",
+      "捞出放凉切薄片",
+      "锅不放油（或极少油），放肉片煎至微卷出油",
+      "推到一边，加豆瓣酱小火炒出红油",
+      "加青椒或蒜苗翻炒",
+      "加生抽、少许糖调味出锅"
+    ],
+    tips: ["肉要先煮再切，切薄片才能煎出灯盏窝（微卷）", "豆瓣酱是灵魂，不能少"]
+  },
+  {
+    id: 36,
+    name: "宫保鸡丁",
+    desc: "酸甜辣鲜，花生点睛",
+    img: "🐔",
+    method: "炒",
+    time: 15,
+    servings: 2,
+    cuisine: "川菜",
+    tags: ["下饭", "多人食"],
+    bv: "BV12J411378N",
+    ingredients: [
+      { name: "鸡肉", amount: "200g鸡胸肉", required: true },
+      { name: "花生", amount: "一把", required: false }
+    ],
+    seasonings: [
+      { name: "食用油", amount: "适量", essential: true },
+      { name: "生抽", amount: "2勺", essential: true },
+      { name: "醋", amount: "1勺", essential: true },
+      { name: "糖", amount: "1勺", essential: true },
+      { name: "盐", amount: "适量", essential: true },
+      { name: "干辣椒", amount: "5-6个", essential: false },
+      { name: "花椒", amount: "少许", essential: false },
+      { name: "淀粉", amount: "腌肉+勾芡", essential: false },
+      { name: "料酒", amount: "少许", essential: false }
+    ],
+    steps: [
+      "鸡胸肉切丁，加生抽、料酒、淀粉抓匀腌15分钟",
+      "碗汁：生抽+醋+糖+盐+淀粉+少量水混合",
+      "锅热油，放花椒和干辣椒段爆香",
+      "大火放入鸡丁滑炒至变白",
+      "倒入碗汁快速翻匀",
+      "撒入花生米翻两下出锅"
+    ],
+    tips: ["花生最后放不要炒太久", "碗汁提前调好一次倒入更方便"]
+  },
+  // ==================== 面食系列 ====================
+  {
+    id: 37,
+    name: "葱油拌面",
+    desc: "一把葱能做出的极致美味",
+    img: "🍜",
+    method: "煮",
+    time: 15,
+    servings: 1,
+    cuisine: "家常",
+    tags: ["主食", "一人食", "快手菜"],
+    bv: "BV1x4411T7Bs",
+    ingredients: [
+      { name: "面条", amount: "1人份", required: true },
+      { name: "葱", amount: "3-4根", required: true }
+    ],
+    seasonings: [
+      { name: "生抽", amount: "2勺", essential: true },
+      { name: "老抽", amount: "半勺", essential: false },
+      { name: "糖", amount: "1勺", essential: true },
+      { name: "食用油", amount: "多一些", essential: true }
+    ],
+    steps: [
+      "葱切段（白色和绿色分开）",
+      "碗中放生抽、老抽、糖备用",
+      "锅中多放油，小火慢慢炸葱段至焦黄酥脆",
+      "把热葱油连油一起倒入调料碗中",
+      "面条煮熟捞出，沥干水分",
+      "浇上葱油拌匀"
+    ],
+    tips: ["葱要小火慢炸，炸到深棕色才香", "油要多，这道面就是靠油香", "面条不要太软，有点嚼劲更好"]
+  },
+  {
+    id: 38,
+    name: "炸酱面",
+    desc: "浓郁酱香的北京味道",
+    img: "🍜",
+    method: "炒",
+    time: 20,
+    servings: 2,
+    cuisine: "家常",
+    tags: ["主食", "多人食"],
+    bv: "BV1YY4y1L7KV",
+    ingredients: [
+      { name: "面条", amount: "2人份", required: true },
+      { name: "猪肉", amount: "150g肉末", required: true },
+      { name: "黄瓜", amount: "1根", required: false }
+    ],
+    seasonings: [
+      { name: "甜面酱", amount: "3勺", essential: true },
+      { name: "食用油", amount: "适量", essential: true },
+      { name: "姜", amount: "少许", essential: false },
+      { name: "糖", amount: "少许", essential: false },
+      { name: "生抽", amount: "1勺", essential: false }
+    ],
+    steps: [
+      "锅中热油，放姜末爆香",
+      "下肉末炒散炒至变色",
+      "转小火，加入甜面酱",
+      "加少量水，小火咕嘟10分钟",
+      "面条煮熟捞出",
+      "黄瓜切丝码在面上，浇酱"
+    ],
+    tips: ["甜面酱是灵魂，没有可以用黄豆酱代替", "酱要小火慢熬才香"]
+  },
+  {
+    id: 39,
+    name: "酸辣粉",
+    desc: "酸辣开胃的重庆小吃",
+    img: "🍜",
+    method: "煮",
+    time: 15,
+    servings: 1,
+    cuisine: "川菜",
+    tags: ["主食", "一人食", "一锅出"],
+    bv: "BV1p44y1277i",
+    ingredients: [
+      { name: "红薯粉", amount: "1人份", required: true }
+    ],
+    seasonings: [
+      { name: "醋", amount: "2勺", essential: true },
+      { name: "辣椒油", amount: "1勺", essential: true },
+      { name: "生抽", amount: "1勺", essential: true },
+      { name: "盐", amount: "适量", essential: true },
+      { name: "花椒", amount: "少许", essential: false },
+      { name: "蒜", amount: "2瓣", essential: false },
+      { name: "花生", amount: "一把", essential: false },
+      { name: "葱", amount: "少许", essential: false }
+    ],
+    steps: [
+      "红薯粉提前用温水泡软",
+      "碗底调汁：醋+辣椒油+生抽+盐+蒜末",
+      "烧一锅水，水开下粉煮至透明Q弹",
+      "捞出放入调料碗中",
+      "浇一勺煮粉的汤",
+      "撒花生碎和葱花"
+    ],
+    tips: ["粉要提前泡才好煮", "醋要多放才够酸爽", "没有红薯粉可以用粉丝"]
+  },
+  {
+    id: 40,
+    name: "煎饺",
+    desc: "底脆馅嫩的冰花煎饺",
+    img: "🥟",
+    method: "煎",
+    time: 15,
+    servings: 1,
+    cuisine: "家常",
+    tags: ["主食", "一人食", "快手菜"],
+    bv: "BV1kt411B7HG",
+    ingredients: [
+      { name: "饺子", amount: "10-15个（速冻即可）", required: true }
+    ],
+    seasonings: [
+      { name: "食用油", amount: "适量", essential: true },
+      { name: "面粉", amount: "1小勺（做冰花）", essential: false }
+    ],
+    steps: [
+      "平底锅刷油，摆入饺子（不用解冻）",
+      "小火煎1分钟至底部微黄",
+      "面粉水（1勺面粉+半碗水）倒入锅中",
+      "盖锅盖中火焖5-6分钟",
+      "水干后揭盖，小火煎至底部金黄酥脆"
+    ],
+    tips: ["冻饺子不用解冻直接煎", "面粉水的比例别太稠，淡淡的就行", "听到滋啦声水干了就揭盖"]
+  },
+  // ==================== 汤类 ====================
+  {
+    id: 41,
+    name: "紫菜蛋花汤",
+    desc: "5分钟的家常快手汤",
+    img: "🥣",
+    method: "煮",
+    time: 5,
+    servings: 2,
+    cuisine: "家常",
+    tags: ["快手菜", "汤", "一人食"],
+    bv: "BV1ct4y1H7sh",
+    ingredients: [
+      { name: "鸡蛋", amount: "1个", required: true },
+      { name: "紫菜", amount: "一小把", required: true }
+    ],
+    seasonings: [
+      { name: "盐", amount: "适量", essential: true },
+      { name: "香油", amount: "几滴", essential: false },
+      { name: "葱", amount: "少许", essential: false }
+    ],
+    steps: [
+      "烧一锅水",
+      "水开后放入紫菜",
+      "转小火，淋入打散的蛋液",
+      "蛋花浮起后加盐",
+      "滴几滴香油，撒葱花"
+    ],
+    tips: ["紫菜不用泡，直接放", "蛋液要慢慢淋，做出的蛋花才漂亮"]
+  },
+  {
+    id: 42,
+    name: "冬瓜排骨汤",
+    desc: "清淡鲜美的家常汤",
+    img: "🥣",
+    method: "煮",
+    time: 45,
+    servings: 3,
+    cuisine: "家常",
+    tags: ["汤", "多人食", "清淡"],
+    bv: "BV18E411Y7xh",
+    ingredients: [
+      { name: "冬瓜", amount: "一块", required: true },
+      { name: "排骨", amount: "300g", required: true }
+    ],
+    seasonings: [
+      { name: "盐", amount: "适量", essential: true },
+      { name: "姜", amount: "几片", essential: false },
+      { name: "料酒", amount: "1勺", essential: false },
+      { name: "葱", amount: "少许", essential: false }
+    ],
+    steps: [
+      "排骨冷水下锅焯水去血沫，捞出洗净",
+      "砂锅或汤锅加水，放排骨、姜片、料酒",
+      "大火煮开转小火炖30分钟",
+      "冬瓜去皮切块，放入锅中",
+      "继续炖10-15分钟至冬瓜透明",
+      "加盐调味，撒葱花"
+    ],
+    tips: ["冬瓜要后放，不然煮太烂", "排骨焯水时冷水下锅更容易去血沫"]
+  },
+  // ==================== 快手菜/小吃 ====================
+  {
+    id: 43,
+    name: "微波炉烤红薯",
+    desc: "不用烤箱也能吃到的烤红薯",
+    img: "🍠",
+    method: "无火",
+    time: 8,
+    servings: 1,
+    cuisine: "家常",
+    tags: ["无火", "一人食", "零食", "简单"],
+    bv: "BV1dT4y1972t",
+    ingredients: [
+      { name: "红薯", amount: "1-2个", required: true }
+    ],
+    seasonings: [],
+    steps: [
+      "红薯洗干净，不用去皮",
+      "用牙签或叉子在红薯上扎几个洞",
+      "用厨房纸巾包住（吸收水分）",
+      "微波炉高火5分钟",
+      "翻面再高火3分钟",
+      "取出捏一捏，软了就好了"
+    ],
+    tips: ["选细长的红薯更容易熟", "一定要扎洞不然可能炸开", "不同大小时间要调整"]
+  },
+  {
+    id: 44,
+    name: "炒年糕",
+    desc: "QQ弹弹的韩式小吃",
+    img: "🍢",
+    method: "炒",
+    time: 10,
+    servings: 1,
+    cuisine: "日式",
+    tags: ["主食", "一人食", "快手菜"],
+    bv: "BV164411R77G",
+    ingredients: [
+      { name: "年糕", amount: "200g", required: true },
+      { name: "白菜", amount: "几片", required: false }
+    ],
+    seasonings: [
+      { name: "番茄酱", amount: "2勺", essential: true },
+      { name: "生抽", amount: "1勺", essential: true },
+      { name: "糖", amount: "1勺", essential: true },
+      { name: "食用油", amount: "适量", essential: true },
+      { name: "辣椒粉", amount: "适量", essential: false }
+    ],
+    steps: [
+      "年糕切条状，用水泡软",
+      "锅中热油，放白菜翻炒",
+      "加年糕、番茄酱、生抽、糖、辣椒粉",
+      "加少量水，焖煮至年糕变软",
+      "大火收汁至浓稠裹满年糕"
+    ],
+    tips: ["年糕要先泡水不然硬邦邦", "有韩式辣酱用辣酱更正宗"]
+  },
+  {
+    id: 45,
+    name: "茄子煲",
+    desc: "咸鲜入味的下饭神器",
+    img: "🍆",
+    method: "焖",
+    time: 20,
+    servings: 2,
+    cuisine: "粤菜",
+    tags: ["下饭", "多人食"],
+    bv: "BV1Dg411379q",
+    ingredients: [
+      { name: "茄子", amount: "2个", required: true },
+      { name: "猪肉", amount: "100g肉末", required: false }
+    ],
+    seasonings: [
+      { name: "蒜", amount: "4瓣", essential: true },
+      { name: "生抽", amount: "2勺", essential: true },
+      { name: "蚝油", amount: "1勺", essential: true },
+      { name: "食用油", amount: "多一些", essential: true },
+      { name: "盐", amount: "适量", essential: true },
+      { name: "糖", amount: "少许", essential: false }
+    ],
+    steps: [
+      "茄子切条或滚刀块",
+      "锅多放油，炸茄子至软捞出",
+      "锅留底油，炒蒜末和肉末",
+      "倒回茄子，加生抽、蚝油、糖、少量水",
+      "盖锅焖5分钟",
+      "大火收汁"
+    ],
+    tips: ["茄子非常吸油，多放一些", "嫌油可以先把茄子用盐腌出水"]
+  },
+  {
+    id: 46,
+    name: "韭菜炒蛋",
+    desc: "春天的味道，简单又鲜",
+    img: "🌿",
+    method: "炒",
+    time: 8,
+    servings: 1,
+    cuisine: "家常",
+    tags: ["快手菜", "下饭", "一人食"],
+    bv: "BV1h4411j7Ku",
+    ingredients: [
+      { name: "韭菜", amount: "1把", required: true },
+      { name: "鸡蛋", amount: "3个", required: true }
+    ],
+    seasonings: [
+      { name: "盐", amount: "适量", essential: true },
+      { name: "食用油", amount: "适量", essential: true }
+    ],
+    steps: [
+      "韭菜洗净切3cm段，鸡蛋打散",
+      "锅热油，倒入蛋液炒成块盛出",
+      "锅中加少许油，大火放韭菜快炒",
+      "韭菜变软后倒回鸡蛋",
+      "加盐翻匀即出锅"
+    ],
+    tips: ["韭菜千万不要炒太久，变黄就不好吃了", "全程大火快炒"]
+  },
+  {
+    id: 47,
+    name: "番茄意面",
+    desc: "酸甜浓郁的西式快手面",
+    img: "🍝",
+    method: "煮",
+    time: 20,
+    servings: 1,
+    cuisine: "西式",
+    tags: ["主食", "一人食"],
+    bv: "BV1rb411K7fx",
+    ingredients: [
+      { name: "面条", amount: "1人份（意面最佳）", required: true },
+      { name: "西红柿", amount: "2个", required: true }
+    ],
+    seasonings: [
+      { name: "盐", amount: "适量", essential: true },
+      { name: "食用油", amount: "适量", essential: true },
+      { name: "蒜", amount: "2瓣", essential: false },
+      { name: "番茄酱", amount: "1勺", essential: false },
+      { name: "糖", amount: "少许", essential: false },
+      { name: "黑胡椒", amount: "适量", essential: false }
+    ],
+    steps: [
+      "面条按包装说明煮至有嚼劲，捞出留一碗面汤",
+      "西红柿切碎，蒜切末",
+      "锅中热油炒蒜末，放入西红柿炒烂成酱",
+      "加番茄酱、盐、糖调味",
+      "倒入面条，加少许面汤翻拌均匀",
+      "撒黑胡椒"
+    ],
+    tips: ["没有意面用挂面也行", "面煮的时候水里加点盐更香"]
+  },
+  {
+    id: 48,
+    name: "鱼香肉丝",
+    desc: "酸甜辣鲜的川菜代表",
+    img: "🥩",
+    method: "炒",
+    time: 15,
+    servings: 2,
+    cuisine: "川菜",
+    tags: ["下饭", "多人食"],
+    bv: "BV1Gs411A7Vo",
+    ingredients: [
+      { name: "猪肉", amount: "200g", required: true },
+      { name: "胡萝卜", amount: "1根", required: false },
+      { name: "黑木耳", amount: "少许", required: false }
+    ],
+    seasonings: [
+      { name: "豆瓣酱", amount: "1勺", essential: true },
+      { name: "生抽", amount: "1勺", essential: true },
+      { name: "醋", amount: "2勺", essential: true },
+      { name: "糖", amount: "1勺", essential: true },
+      { name: "盐", amount: "适量", essential: true },
+      { name: "食用油", amount: "适量", essential: true },
+      { name: "蒜", amount: "2瓣", essential: false },
+      { name: "姜", amount: "少许", essential: false },
+      { name: "淀粉", amount: "水淀粉勾芡", essential: false }
+    ],
+    steps: [
+      "猪肉切丝，加生抽淀粉腌10分钟",
+      "胡萝卜切丝，木耳泡发切丝",
+      "碗汁：醋+糖+生抽+盐+淀粉+水调匀",
+      "锅热油滑炒肉丝盛出",
+      "锅中加油炒豆瓣酱出红油",
+      "下配菜翻炒，倒回肉丝",
+      "倒入碗汁快速翻匀"
+    ],
+    tips: ["鱼香汁酸甜辣的比例是关键，可以按自己口味调", "没有木耳用其他蔬菜也行"]
+  },
+  {
+    id: 49,
+    name: "酱油炒饭",
+    desc: "最朴素的炒饭也最治愈",
+    img: "🍚",
+    method: "炒",
+    time: 5,
+    servings: 1,
+    cuisine: "粤菜",
+    tags: ["主食", "快手菜", "一人食"],
+    bv: "BV1sJ411K7Yb",
+    ingredients: [
+      { name: "米饭", amount: "1碗隔夜饭", required: true },
+      { name: "鸡蛋", amount: "1个", required: false }
+    ],
+    seasonings: [
+      { name: "生抽", amount: "1.5勺", essential: true },
+      { name: "食用油", amount: "适量", essential: true },
+      { name: "葱", amount: "1根", essential: false }
+    ],
+    steps: [
+      "锅中热油，打入鸡蛋炒散",
+      "倒入隔夜饭大火翻炒",
+      "淋入生抽，翻炒至每粒饭上色",
+      "撒葱花翻匀出锅"
+    ],
+    tips: ["隔夜饭是灵魂，当天的太黏", "生抽沿锅边淋更容易均匀"]
+  },
+  {
+    id: 50,
+    name: "凉拌茄子",
+    desc: "蒜香浓郁的低脂凉菜",
+    img: "🍆",
+    method: "蒸",
+    time: 15,
+    servings: 1,
+    cuisine: "家常",
+    tags: ["凉菜", "一人食", "减脂"],
+    bv: "BV1sJ411N7H4",
+    ingredients: [
+      { name: "茄子", amount: "2个", required: true }
+    ],
+    seasonings: [
+      { name: "蒜", amount: "4瓣", essential: true },
+      { name: "生抽", amount: "2勺", essential: true },
+      { name: "醋", amount: "1勺", essential: true },
+      { name: "盐", amount: "适量", essential: true },
+      { name: "辣椒油", amount: "适量", essential: false },
+      { name: "香油", amount: "少许", essential: false }
+    ],
+    steps: [
+      "茄子整根上锅蒸15分钟至软烂",
+      "取出放凉，手撕成条",
+      "蒜切末，调料碗混合所有调味料",
+      "浇在茄子上拌匀"
+    ],
+    tips: ["蒸比炒少油很多，适合减脂", "蒜一定要多放"]
+  },
+  // ==================== 更多丰富菜品 ====================
+  {
+    id: 51,
+    name: "糖醋排骨",
+    desc: "酸甜酥脆的人气硬菜",
+    img: "🍖",
+    method: "炒",
+    time: 30,
+    servings: 2,
+    cuisine: "家常",
+    tags: ["硬菜", "多人食"],
+    bv: "BV1Ws41157vT",
+    ingredients: [
+      { name: "排骨", amount: "500g", required: true }
+    ],
+    seasonings: [
+      { name: "醋", amount: "3勺", essential: true },
+      { name: "糖", amount: "2勺", essential: true },
+      { name: "生抽", amount: "2勺", essential: true },
+      { name: "料酒", amount: "1勺", essential: true },
+      { name: "盐", amount: "适量", essential: true },
+      { name: "食用油", amount: "适量", essential: true },
+      { name: "姜", amount: "几片", essential: false }
+    ],
+    steps: [
+      "排骨剁小段，冷水焯水去血沫",
+      "锅中少油，放排骨煎至两面微黄",
+      "加姜片、料酒翻炒",
+      "加生抽、醋、糖、少量水",
+      "大火煮开转小火焖20分钟",
+      "大火收汁至浓稠裹满排骨"
+    ],
+    tips: ["收汁时不停翻动防止糊底", "醋最后再加一小勺更酸爽"]
+  },
+  {
+    id: 52,
+    name: "蒜蓉粉丝娃娃菜",
+    desc: "蒜香浓郁的蒸菜",
+    img: "🥬",
+    method: "蒸",
+    time: 15,
+    servings: 2,
+    cuisine: "粤菜",
+    tags: ["清淡", "多人食"],
+    bv: "BV12b411W738",
+    ingredients: [
+      { name: "白菜", amount: "1棵娃娃菜", required: true },
+      { name: "粉丝", amount: "1把", required: true }
+    ],
+    seasonings: [
+      { name: "蒜", amount: "1整头", essential: true },
+      { name: "生抽", amount: "2勺", essential: true },
+      { name: "食用油", amount: "适量", essential: true },
+      { name: "盐", amount: "适量", essential: true }
+    ],
+    steps: [
+      "粉丝泡软，娃娃菜对半切开",
+      "娃娃菜摆盘，铺上粉丝",
+      "蒜切末，锅中油烧热浇在蒜末上",
+      "浇在白菜粉丝上",
+      "淋生抽，上锅蒸10分钟"
+    ],
+    tips: ["蒜末要热油浇才香", "蒸的时间不要太久"]
+  },
+  {
+    id: 53,
+    name: "干煸四季豆",
+    desc: "表皮皱脆的下饭菜",
+    img: "🫛",
+    method: "炒",
+    time: 12,
+    servings: 2,
+    cuisine: "川菜",
+    tags: ["下饭", "一人食"],
+    bv: "BV13D4y1u7TP",
+    ingredients: [
+      { name: "四季豆", amount: "300g", required: true },
+      { name: "猪肉", amount: "50g肉末", required: false }
+    ],
+    seasonings: [
+      { name: "食用油", amount: "多一些", essential: true },
+      { name: "盐", amount: "适量", essential: true },
+      { name: "蒜", amount: "3瓣", essential: false },
+      { name: "干辣椒", amount: "3个", essential: false },
+      { name: "生抽", amount: "1勺", essential: false }
+    ],
+    steps: [
+      "四季豆摘去两头和老筋，掰成段",
+      "锅中多放油，放入四季豆炸至表皮起皱",
+      "捞出沥油",
+      "锅留底油，炒蒜末、干辣椒、肉末",
+      "倒回四季豆翻炒",
+      "加盐和生抽调味"
+    ],
+    tips: ["四季豆一定要彻底炒熟，没熟的有毒素", "炸到表皮起皱才算到位"]
+  },
+  {
+    id: 54,
+    name: "白灼虾",
+    desc: "保留鲜味的极简做法",
+    img: "🦐",
+    method: "煮",
+    time: 8,
+    servings: 2,
+    cuisine: "粤菜",
+    tags: ["快手菜", "多人食", "清淡"],
+    bv: "BV1zH4y1s7Ln",
+    ingredients: [
+      { name: "虾", amount: "500g", required: true }
+    ],
+    seasonings: [
+      { name: "姜", amount: "几片", essential: true },
+      { name: "料酒", amount: "1勺", essential: false },
+      { name: "生抽", amount: "蘸料", essential: false },
+      { name: "葱", amount: "少许", essential: false }
+    ],
+    steps: [
+      "虾剪去虾须，挑去虾线",
+      "烧一锅水，加姜片、料酒、葱段",
+      "水开后放入虾",
+      "虾变红弯曲后立即捞出",
+      "过冰水让虾肉更弹",
+      "配酱油蒜蓉蘸料吃"
+    ],
+    tips: ["虾不要煮太久，变红就捞", "过冰水口感更Q弹"]
+  },
+  {
+    id: 55,
+    name: "清炒西兰花",
+    desc: "健康低脂的绿色蔬菜",
+    img: "🥦",
+    method: "炒",
+    time: 8,
+    servings: 1,
+    cuisine: "家常",
+    tags: ["快手菜", "清淡", "减脂", "一人食"],
+    bv: "BV1fy4y1W7z5",
+    ingredients: [
+      { name: "西兰花", amount: "1棵", required: true }
+    ],
+    seasonings: [
+      { name: "蒜", amount: "3瓣", essential: true },
+      { name: "盐", amount: "适量", essential: true },
+      { name: "食用油", amount: "适量", essential: true },
+      { name: "蚝油", amount: "1勺", essential: false }
+    ],
+    steps: [
+      "西兰花切小朵，焯水1分钟捞出",
+      "锅中热油，放蒜末爆香",
+      "倒入西兰花大火翻炒",
+      "加蚝油、盐调味",
+      "翻匀出锅"
+    ],
+    tips: ["焯水时加点盐和油颜色更绿", "不要炒太久，保持脆绿"]
+  },
+  {
+    id: 56,
+    name: "葱花饼",
+    desc: "外酥里软的面食小吃",
+    img: "🥞",
+    method: "煎",
+    time: 20,
+    servings: 1,
+    cuisine: "家常",
+    tags: ["主食", "一人食", "早餐"],
+    bv: "BV1SC4y1Y7tw",
+    ingredients: [
+      { name: "面粉", amount: "200g", required: true },
+      { name: "葱", amount: "3根", required: true }
+    ],
+    seasonings: [
+      { name: "盐", amount: "适量", essential: true },
+      { name: "食用油", amount: "适量", essential: true }
+    ],
+    steps: [
+      "面粉加温水揉成软面团，醒20分钟",
+      "擀成大薄片，刷油撒盐和葱花",
+      "卷起来盘成螺旋，再擀成饼",
+      "平底锅少油，中小火煎至两面金黄"
+    ],
+    tips: ["面团要软，做出来才有层次", "可以用烫面（开水和面）更软"]
+  },
+  {
+    id: 57,
+    name: "干锅花菜",
+    desc: "焦香入味的重口味蔬菜",
+    img: "🥦",
+    method: "炒",
+    time: 12,
+    servings: 2,
+    cuisine: "湘菜",
+    tags: ["下饭", "一人食"],
+    bv: "BV1WsvvBdEu1",
+    ingredients: [
+      { name: "花菜", amount: "1棵", required: true },
+      { name: "猪肉", amount: "50g五花肉", required: false }
+    ],
+    seasonings: [
+      { name: "食用油", amount: "适量", essential: true },
+      { name: "生抽", amount: "1勺", essential: true },
+      { name: "蚝油", amount: "1勺", essential: false },
+      { name: "盐", amount: "适量", essential: true },
+      { name: "干辣椒", amount: "3个", essential: false },
+      { name: "蒜", amount: "3瓣", essential: false }
+    ],
+    steps: [
+      "花菜掰小朵洗净沥干",
+      "锅中热油，先煸五花肉出油",
+      "放干辣椒和蒜片爆香",
+      "倒入花菜大火翻炒",
+      "加生抽、蚝油、盐",
+      "不加水，干煸至花菜微焦出香味"
+    ],
+    tips: ["花菜一定要沥干水分再下锅", "关键是干煸不加水，才有焦香味"]
+  },
+  {
+    id: 58,
+    name: "番茄牛腩",
+    desc: "酸甜浓郁的慢炖大菜",
+    img: "🥩",
+    method: "焖",
+    time: 90,
+    servings: 3,
+    cuisine: "家常",
+    tags: ["硬菜", "多人食", "下饭"],
+    bv: "BV1yb4y117Ak",
+    ingredients: [
+      { name: "西红柿", amount: "3个", required: true },
+      { name: "牛肉", amount: "500g牛腩", required: true },
+      { name: "土豆", amount: "1个", required: false }
+    ],
+    seasonings: [
+      { name: "盐", amount: "适量", essential: true },
+      { name: "食用油", amount: "适量", essential: true },
+      { name: "料酒", amount: "1勺", essential: false },
+      { name: "姜", amount: "几片", essential: false },
+      { name: "番茄酱", amount: "1勺", essential: false },
+      { name: "八角", amount: "1个", essential: false }
+    ],
+    steps: [
+      "牛腩切块焯水去血沫",
+      "西红柿开水烫后去皮切块",
+      "锅中热油炒姜片、八角",
+      "放牛腩翻炒加料酒",
+      "加西红柿炒出汁，加番茄酱",
+      "加水没过食材，大火煮开转小火",
+      "炖1-1.5小时至牛肉软烂",
+      "有土豆最后30分钟加入"
+    ],
+    tips: ["牛腩一定要炖够时间才烂", "西红柿去皮口感更好"]
+  },
+  {
+    id: 59,
+    name: "蒜蓉粉丝蒸虾",
+    desc: "宴客级别的蒸菜",
+    img: "🦐",
+    method: "蒸",
+    time: 15,
+    servings: 2,
+    cuisine: "粤菜",
+    tags: ["硬菜", "多人食"],
+    bv: "BV1DR4y1p7j4",
+    ingredients: [
+      { name: "虾", amount: "10只", required: true },
+      { name: "粉丝", amount: "1把", required: true }
+    ],
+    seasonings: [
+      { name: "蒜", amount: "1整头", essential: true },
+      { name: "生抽", amount: "2勺", essential: true },
+      { name: "食用油", amount: "适量", essential: true },
+      { name: "料酒", amount: "少许", essential: false }
+    ],
+    steps: [
+      "粉丝泡软铺在盘底",
+      "虾开背去虾线，摆在粉丝上",
+      "蒜切末，热油炒香蒜蓉",
+      "蒜蓉铺在虾上，淋料酒",
+      "上锅蒸8-10分钟",
+      "出锅淋生抽"
+    ],
+    tips: ["虾背剪开更容易入味", "蒜蓉要用热油炒过才香"]
+  },
+  {
+    id: 60,
+    name: "土豆丝饼",
+    desc: "外焦里嫩的土豆新吃法",
+    img: "🥔",
+    method: "煎",
+    time: 15,
+    servings: 1,
+    cuisine: "家常",
+    tags: ["主食", "一人食", "早餐"],
+    bv: "BV1MW411L7GA",
+    ingredients: [
+      { name: "土豆", amount: "2个", required: true },
+      { name: "鸡蛋", amount: "1个", required: false }
+    ],
+    seasonings: [
+      { name: "盐", amount: "适量", essential: true },
+      { name: "食用油", amount: "适量", essential: true },
+      { name: "黑胡椒", amount: "适量", essential: false },
+      { name: "葱", amount: "少许", essential: false }
+    ],
+    steps: [
+      "土豆去皮擦丝，挤干水分",
+      "加鸡蛋、盐、黑胡椒、葱花拌匀",
+      "平底锅放油烧热",
+      "放入土豆丝压成饼状",
+      "中小火煎至底面金黄翻面",
+      "两面金黄即可"
+    ],
+    tips: ["土豆丝一定要挤干水分", "中小火慢煎不容易糊"]
+  },
+  {
+    id: 61,
+    name: "西芹炒百合",
+    desc: "清甜爽口的养生小炒",
+    img: "🌿",
+    method: "炒",
+    time: 8,
+    servings: 1,
+    cuisine: "粤菜",
+    tags: ["清淡", "快手菜", "减脂"],
+    bv: "BV1uM4y1k7mp",
+    ingredients: [
+      { name: "西芹", amount: "2根", required: true },
+      { name: "百合", amount: "1个", required: true }
+    ],
+    seasonings: [
+      { name: "盐", amount: "适量", essential: true },
+      { name: "食用油", amount: "适量", essential: true }
+    ],
+    steps: [
+      "西芹切斜段，百合掰开洗净",
+      "锅中热油，大火先炒西芹",
+      "翻炒1分钟后加百合",
+      "加盐快速翻匀出锅"
+    ],
+    tips: ["百合很容易熟，最后放翻两下就好", "全程大火快炒"]
+  },
+  {
+    id: 62,
+    name: "肉末茄子",
+    desc: "鲜香入味的下饭利器",
+    img: "🍆",
+    method: "炒",
+    time: 15,
+    servings: 2,
+    cuisine: "家常",
+    tags: ["下饭", "一人食"],
+    bv: "BV1n4411p7ja",
+    ingredients: [
+      { name: "茄子", amount: "2个", required: true },
+      { name: "猪肉", amount: "100g肉末", required: true }
+    ],
+    seasonings: [
+      { name: "蒜", amount: "3瓣", essential: true },
+      { name: "生抽", amount: "2勺", essential: true },
+      { name: "食用油", amount: "多一些", essential: true },
+      { name: "盐", amount: "适量", essential: true },
+      { name: "蚝油", amount: "1勺", essential: false },
+      { name: "豆瓣酱", amount: "1勺", essential: false }
+    ],
+    steps: [
+      "茄子切条，用盐腌10分钟挤水",
+      "锅多油，炸茄条至软捞出",
+      "锅留底油，炒蒜末和肉末",
+      "加豆瓣酱炒出红油",
+      "倒回茄子，加生抽蚝油",
+      "翻匀收汁"
+    ],
+    tips: ["茄子提前腌出水能少吸油", "没有肉末纯素也好吃"]
+  },
+  {
+    id: 63,
+    name: "蛋饺",
+    desc: "金黄蛋皮包裹肉馅",
+    img: "🥚",
+    method: "煎",
+    time: 25,
+    servings: 2,
+    cuisine: "家常",
+    tags: ["硬菜", "多人食"],
+    bv: "BV1Yt411X7QB",
+    ingredients: [
+      { name: "鸡蛋", amount: "5个", required: true },
+      { name: "猪肉", amount: "150g肉末", required: true }
+    ],
+    seasonings: [
+      { name: "盐", amount: "适量", essential: true },
+      { name: "食用油", amount: "少许", essential: true },
+      { name: "生抽", amount: "1勺", essential: false },
+      { name: "姜", amount: "少许末", essential: false }
+    ],
+    steps: [
+      "肉末加盐、生抽、姜末搅拌上劲",
+      "鸡蛋打散",
+      "大勺或小锅抹油加热",
+      "倒入一勺蛋液转匀成蛋皮",
+      "半凝固时放一小团肉馅在一侧",
+      "对折成饺子形状，翻面煎一下",
+      "重复直到材料用完"
+    ],
+    tips: ["蛋皮不要太厚", "做好的蛋饺可以放汤里煮更好吃"]
+  },
+  {
+    id: 64,
+    name: "咸蛋黄南瓜",
+    desc: "金沙裹满的甜蜜南瓜",
+    img: "🎃",
+    method: "炒",
+    time: 15,
+    servings: 2,
+    cuisine: "粤菜",
+    tags: ["下饭", "多人食"],
+    bv: "BV154jnzVEff",
+    ingredients: [
+      { name: "南瓜", amount: "半个", required: true },
+      { name: "咸蛋", amount: "2个", required: true }
+    ],
+    seasonings: [
+      { name: "食用油", amount: "适量", essential: true },
+      { name: "盐", amount: "少许", essential: false }
+    ],
+    steps: [
+      "南瓜去皮切条，蒸或煮至八分熟",
+      "咸蛋取蛋黄压碎",
+      "锅中热油，小火炒咸蛋黄至起泡",
+      "放入南瓜条轻轻翻裹",
+      "让每一块都裹上蛋黄沙"
+    ],
+    tips: ["咸蛋黄要小火慢炒才出沙", "南瓜不要煮太软不然容易碎"]
+  },
+  {
+    id: 65,
+    name: "蚝油生菜",
+    desc: "粤式餐厅的经典蔬菜",
+    img: "🥬",
+    method: "煮",
+    time: 5,
+    servings: 1,
+    cuisine: "粤菜",
+    tags: ["快手菜", "清淡", "一人食", "减脂"],
+    bv: "BV1bS4y1r7jR",
+    ingredients: [
+      { name: "生菜", amount: "1把", required: true }
+    ],
+    seasonings: [
+      { name: "蚝油", amount: "2勺", essential: true },
+      { name: "盐", amount: "少许", essential: true },
+      { name: "食用油", amount: "少许", essential: true },
+      { name: "蒜", amount: "2瓣", essential: false }
+    ],
+    steps: [
+      "生菜洗净",
+      "烧一锅水加少许盐和油",
+      "焯烫生菜10秒，捞出摆盘",
+      "锅中少油炒蒜末，加蚝油和一点水煮开",
+      "浇在生菜上"
+    ],
+    tips: ["生菜焯水不要超过15秒", "蚝油加热后味道更鲜"]
+  },
+  {
+    id: 66,
+    name: "孜然羊肉",
+    desc: "烧烤风味的家庭版",
+    img: "🥩",
+    method: "炒",
+    time: 12,
+    servings: 2,
+    cuisine: "西北",
+    tags: ["下饭", "多人食"],
+    bv: "BV1YV411b7yp",
+    ingredients: [
+      { name: "羊肉", amount: "300g", required: true }
+    ],
+    seasonings: [
+      { name: "孜然", amount: "2勺", essential: true },
+      { name: "辣椒粉", amount: "1勺", essential: false },
+      { name: "盐", amount: "适量", essential: true },
+      { name: "食用油", amount: "适量", essential: true },
+      { name: "料酒", amount: "1勺", essential: false },
+      { name: "生抽", amount: "1勺", essential: false }
+    ],
+    steps: [
+      "羊肉切薄片，加料酒、生抽腌10分钟",
+      "锅大火热油，快速翻炒羊肉至变色",
+      "撒入孜然粉和辣椒粉",
+      "大火翻炒30秒",
+      "加盐出锅"
+    ],
+    tips: ["羊肉要大火快炒不要炒老", "孜然多放才有烧烤风味"]
+  },
+  {
+    id: 67,
+    name: "西红柿炖排骨",
+    desc: "酸甜解腻的排骨做法",
+    img: "🍖",
+    method: "焖",
+    time: 45,
+    servings: 3,
+    cuisine: "家常",
+    tags: ["硬菜", "多人食", "汤"],
+    bv: "BV1Jw41197mo",
+    ingredients: [
+      { name: "西红柿", amount: "3个", required: true },
+      { name: "排骨", amount: "500g", required: true }
+    ],
+    seasonings: [
+      { name: "盐", amount: "适量", essential: true },
+      { name: "料酒", amount: "1勺", essential: false },
+      { name: "姜", amount: "几片", essential: false },
+      { name: "食用油", amount: "少许", essential: true }
+    ],
+    steps: [
+      "排骨焯水洗净",
+      "西红柿去皮切大块",
+      "锅中热油炒姜片",
+      "放排骨翻炒加料酒",
+      "放西红柿炒出汁",
+      "加水没过食材，大火煮开转小火炖40分钟",
+      "加盐调味"
+    ],
+    tips: ["西红柿的酸能让排骨更嫩", "喜欢浓汤可以加番茄酱"]
+  },
+  {
+    id: 68,
+    name: "蒸鸡蛋糕",
+    desc: "Q弹的咸味蛋糕",
+    img: "🥚",
+    method: "蒸",
+    time: 20,
+    servings: 2,
+    cuisine: "家常",
+    tags: ["一人食", "简单"],
+    bv: "BV1Wt411Z7td",
+    ingredients: [
+      { name: "鸡蛋", amount: "4个", required: true },
+      { name: "面粉", amount: "3勺", required: true }
+    ],
+    seasonings: [
+      { name: "盐", amount: "适量", essential: true },
+      { name: "葱", amount: "少许", essential: false }
+    ],
+    steps: [
+      "鸡蛋打散搅匀",
+      "加入面粉和盐搅拌成均匀面糊",
+      "加少许水调到流动状",
+      "倒入刷油的容器",
+      "撒葱花",
+      "上锅大火蒸15分钟"
+    ],
+    tips: ["面糊不要太稠", "蒸的时候盖锅盖防进水"]
+  },
+  {
+    id: 69,
+    name: "酸菜鱼",
+    desc: "酸爽开胃的大菜",
+    img: "🐟",
+    method: "煮",
+    time: 25,
+    servings: 3,
+    cuisine: "川菜",
+    tags: ["硬菜", "多人食"],
+    bv: "BV1mK411F7oM",
+    ingredients: [
+      { name: "鱼", amount: "1条（草鱼或黑鱼）", required: true },
+      { name: "酸菜", amount: "1包", required: true }
+    ],
+    seasonings: [
+      { name: "盐", amount: "适量", essential: true },
+      { name: "料酒", amount: "1勺", essential: true },
+      { name: "食用油", amount: "适量", essential: true },
+      { name: "姜", amount: "几片", essential: false },
+      { name: "蒜", amount: "3瓣", essential: false },
+      { name: "花椒", amount: "少许", essential: false },
+      { name: "干辣椒", amount: "5个", essential: false },
+      { name: "淀粉", amount: "腌鱼", essential: false }
+    ],
+    steps: [
+      "鱼片成薄片，加盐、料酒、淀粉腌15分钟",
+      "酸菜切碎",
+      "锅中热油，炒姜蒜和花椒",
+      "加酸菜炒香",
+      "加水煮开，调味",
+      "转小火放入鱼片，不要搅动",
+      "鱼片变白即熟，装碗",
+      "另起锅热油泼上干辣椒"
+    ],
+    tips: ["鱼片要薄才容易熟", "放鱼片后不要搅动防止碎"]
+  },
+  {
+    id: 70,
+    name: "番茄火锅",
+    desc: "不辣的火锅底料自制",
+    img: "🫕",
+    method: "煮",
+    time: 20,
+    servings: 3,
+    cuisine: "家常",
+    tags: ["一锅出", "多人食"],
+    bv: "BV1Eb411w73q",
+    ingredients: [
+      { name: "西红柿", amount: "3-4个", required: true }
+    ],
+    seasonings: [
+      { name: "盐", amount: "适量", essential: true },
+      { name: "食用油", amount: "适量", essential: true },
+      { name: "番茄酱", amount: "2勺", essential: false },
+      { name: "糖", amount: "1勺", essential: false }
+    ],
+    steps: [
+      "西红柿去皮切碎",
+      "锅中热油，炒西红柿至完全软烂成酱",
+      "加番茄酱翻炒增色",
+      "加大量水煮开",
+      "加盐和糖调味",
+      "就可以涮各种食材了"
+    ],
+    tips: ["底料多加番茄酱颜色更好看", "涮菜配蘸料更好吃"]
+  },
+  {
+    id: 71,
+    name: "白菜猪肉炖粉条",
+    desc: "东北经典的温暖一锅出",
+    img: "🥬",
+    method: "焖",
+    time: 25,
+    servings: 3,
+    cuisine: "家常",
+    tags: ["一锅出", "多人食", "下饭"],
+    bv: "BV19U4y1K7mq",
+    ingredients: [
+      { name: "白菜", amount: "半棵", required: true },
+      { name: "猪肉", amount: "200g五花肉", required: true },
+      { name: "粉丝", amount: "1把", required: true }
+    ],
+    seasonings: [
+      { name: "生抽", amount: "2勺", essential: true },
+      { name: "老抽", amount: "半勺", essential: false },
+      { name: "盐", amount: "适量", essential: true },
+      { name: "食用油", amount: "少许", essential: true },
+      { name: "姜", amount: "几片", essential: false }
+    ],
+    steps: [
+      "白菜切块，五花肉切片，粉丝泡软",
+      "锅中少油，炒五花肉出油",
+      "加姜片、白菜翻炒",
+      "加生抽、老抽、盐",
+      "加水没过食材煮开",
+      "放粉丝，焖10分钟"
+    ],
+    tips: ["粉丝最后放不然会糊", "白菜会出水所以水别加太多"]
+  },
+  {
+    id: 72,
+    name: "辣子鸡",
+    desc: "满锅辣椒找鸡肉的川味经典",
+    img: "🌶️",
+    method: "炒",
+    time: 20,
+    servings: 2,
+    cuisine: "川菜",
+    tags: ["硬菜", "下饭", "多人食"],
+    bv: "BV1rv411L7KJ",
+    ingredients: [
+      { name: "鸡肉", amount: "300g", required: true }
+    ],
+    seasonings: [
+      { name: "干辣椒", amount: "一大把", essential: true },
+      { name: "花椒", amount: "一把", essential: true },
+      { name: "食用油", amount: "多一些", essential: true },
+      { name: "盐", amount: "适量", essential: true },
+      { name: "料酒", amount: "1勺", essential: false },
+      { name: "生抽", amount: "1勺", essential: false },
+      { name: "糖", amount: "少许", essential: false },
+      { name: "蒜", amount: "3瓣", essential: false }
+    ],
+    steps: [
+      "鸡肉切小块，加盐、料酒、生抽腌15分钟",
+      "干辣椒剪段、花椒备好",
+      "锅中多油，放鸡块炸至金黄捞出",
+      "锅留底油，小火炒干辣椒和花椒至变色出香",
+      "倒回鸡块大火翻炒",
+      "加糖、盐调味出锅"
+    ],
+    tips: ["干辣椒不要炒糊会苦", "鸡肉炸过才有脆的口感"]
+  },
+  {
+    id: 73,
+    name: "清炒豆芽",
+    desc: "爽脆便宜的快手蔬菜",
+    img: "🌱",
+    method: "炒",
+    time: 5,
+    servings: 1,
+    cuisine: "家常",
+    tags: ["快手菜", "减脂", "一人食"],
+    bv: "BV1X7411P72Q",
+    ingredients: [
+      { name: "豆芽", amount: "200g", required: true }
+    ],
+    seasonings: [
+      { name: "盐", amount: "适量", essential: true },
+      { name: "食用油", amount: "适量", essential: true },
+      { name: "醋", amount: "少许", essential: false },
+      { name: "蒜", amount: "2瓣", essential: false }
+    ],
+    steps: [
+      "豆芽洗净沥干",
+      "锅中热油大火",
+      "放蒜末爆香",
+      "倒入豆芽猛火翻炒",
+      "沿锅边淋少许醋",
+      "加盐出锅"
+    ],
+    tips: ["全程大火不要超过2分钟", "淋醋可以去除豆腥味"]
+  },
+  {
+    id: 74,
+    name: "蒜蓉蒸排骨",
+    desc: "嫩滑入味的蒸菜",
+    img: "🍖",
+    method: "蒸",
+    time: 30,
+    servings: 2,
+    cuisine: "粤菜",
+    tags: ["硬菜", "多人食"],
+    bv: "BV1hL41177vk",
+    ingredients: [
+      { name: "排骨", amount: "500g", required: true }
+    ],
+    seasonings: [
+      { name: "蒜", amount: "5瓣", essential: true },
+      { name: "生抽", amount: "2勺", essential: true },
+      { name: "盐", amount: "适量", essential: true },
+      { name: "料酒", amount: "1勺", essential: false },
+      { name: "淀粉", amount: "1勺", essential: false },
+      { name: "食用油", amount: "少许", essential: true }
+    ],
+    steps: [
+      "排骨剁小段洗净沥干",
+      "加蒜末、生抽、料酒、盐、淀粉、油拌匀",
+      "腌制30分钟（或冰箱过夜）",
+      "上锅大火蒸25-30分钟",
+      "撒葱花出锅"
+    ],
+    tips: ["腌越久越入味", "加淀粉能锁住肉汁"]
+  },
+  {
+    id: 75,
+    name: "凉拌木耳",
+    desc: "脆爽弹牙的黑色美食",
+    img: "🍄",
+    method: "拌",
+    time: 10,
+    servings: 1,
+    cuisine: "家常",
+    tags: ["凉菜", "一人食", "减脂"],
+    bv: "BV1Hy4y1Y7FV",
+    ingredients: [
+      { name: "黑木耳", amount: "一把干木耳", required: true }
+    ],
+    seasonings: [
+      { name: "蒜", amount: "3瓣", essential: true },
+      { name: "醋", amount: "2勺", essential: true },
+      { name: "生抽", amount: "1勺", essential: true },
+      { name: "盐", amount: "适量", essential: true },
+      { name: "辣椒油", amount: "适量", essential: false },
+      { name: "香油", amount: "少许", essential: false }
+    ],
+    steps: [
+      "干木耳提前泡发（冷水泡2小时或开水泡30分钟）",
+      "洗净撕小朵",
+      "开水焯烫2分钟捞出过凉水",
+      "调料碗：蒜末+醋+生抽+盐+辣椒油+香油",
+      "浇在木耳上拌匀"
+    ],
+    tips: ["木耳不要泡太久容易变质", "焯水可以去除杂质也更脆"]
+  },
+  {
+    id: 76,
+    name: "香煎豆腐",
+    desc: "外焦里嫩蘸酱吃",
+    img: "🧈",
+    method: "煎",
+    time: 10,
+    servings: 1,
+    cuisine: "家常",
+    tags: ["快手菜", "一人食", "减脂"],
+    bv: "BV1a54y1h7LC",
+    ingredients: [
+      { name: "豆腐", amount: "1块老豆腐", required: true }
+    ],
+    seasonings: [
+      { name: "食用油", amount: "适量", essential: true },
+      { name: "盐", amount: "适量", essential: true },
+      { name: "辣椒粉", amount: "适量", essential: false },
+      { name: "孜然", amount: "适量", essential: false }
+    ],
+    steps: [
+      "豆腐切厚片，用厨房纸吸干水分",
+      "平底锅放油中火加热",
+      "放入豆腐片煎至底面金黄",
+      "翻面继续煎",
+      "撒盐、辣椒粉、孜然"
+    ],
+    tips: ["吸干水分才不容易溅油", "不要频繁翻面"]
+  },
+  {
+    id: 77,
+    name: "黄焖鸡",
+    desc: "酱香浓郁的一锅炖",
+    img: "🍗",
+    method: "焖",
+    time: 30,
+    servings: 2,
+    cuisine: "家常",
+    tags: ["一锅出", "下饭", "多人食"],
+    bv: "BV1Rh411n71T",
+    ingredients: [
+      { name: "鸡肉", amount: "500g", required: true },
+      { name: "土豆", amount: "1个", required: false },
+      { name: "青椒", amount: "2个", required: false }
+    ],
+    seasonings: [
+      { name: "生抽", amount: "3勺", essential: true },
+      { name: "老抽", amount: "1勺", essential: true },
+      { name: "料酒", amount: "1勺", essential: true },
+      { name: "食用油", amount: "适量", essential: true },
+      { name: "糖", amount: "少许", essential: false },
+      { name: "姜", amount: "几片", essential: false },
+      { name: "蒜", amount: "3瓣", essential: false },
+      { name: "干辣椒", amount: "2个", essential: false }
+    ],
+    steps: [
+      "鸡肉剁块焯水",
+      "锅中热油炒姜蒜和干辣椒",
+      "放鸡块翻炒至表面微黄",
+      "加生抽、老抽、料酒、糖翻匀",
+      "加水刚没过食材，大火煮开转小火",
+      "焖15分钟后加土豆块",
+      "继续焖10分钟，加青椒翻匀",
+      "大火收汁"
+    ],
+    tips: ["酱油比较多盐少放", "配米饭浇汁超好吃"]
+  },
+  {
+    id: 78,
+    name: "糖醋里脊",
+    desc: "酸甜酥脆的经典菜",
+    img: "🥩",
+    method: "炸",
+    time: 20,
+    servings: 2,
+    cuisine: "家常",
+    tags: ["硬菜", "多人食"],
+    bv: "BV1Dt411B78h",
+    ingredients: [
+      { name: "猪肉", amount: "300g里脊肉", required: true }
+    ],
+    seasonings: [
+      { name: "醋", amount: "3勺", essential: true },
+      { name: "糖", amount: "2勺", essential: true },
+      { name: "番茄酱", amount: "2勺", essential: true },
+      { name: "生抽", amount: "1勺", essential: true },
+      { name: "淀粉", amount: "裹粉用", essential: true },
+      { name: "食用油", amount: "炸用多一些", essential: true },
+      { name: "盐", amount: "适量", essential: true }
+    ],
+    steps: [
+      "里脊肉切条加盐、料酒腌10分钟",
+      "裹上淀粉（干粉）",
+      "油温六成热下锅炸至金黄捞出",
+      "复炸一次更酥脆",
+      "碗汁：醋+糖+番茄酱+生抽+少量水淀粉",
+      "锅中少油，倒入碗汁熬至冒泡",
+      "倒入炸好的里脊翻匀"
+    ],
+    tips: ["复炸一次才酥脆", "糖醋汁趁热裹才好吃"]
+  },
+  {
+    id: 79,
+    name: "西红柿疙瘩汤",
+    desc: "暖胃的面疙瘩汤",
+    img: "🥣",
+    method: "煮",
+    time: 15,
+    servings: 1,
+    cuisine: "家常",
+    tags: ["一人食", "主食", "养胃"],
+    bv: "BV1MW41147La",
+    ingredients: [
+      { name: "西红柿", amount: "1个", required: true },
+      { name: "面粉", amount: "100g", required: true },
+      { name: "鸡蛋", amount: "1个", required: false }
+    ],
+    seasonings: [
+      { name: "盐", amount: "适量", essential: true },
+      { name: "食用油", amount: "少许", essential: true },
+      { name: "香油", amount: "少许", essential: false },
+      { name: "葱", amount: "少许", essential: false }
+    ],
+    steps: [
+      "面粉中边加水边用筷子搅，搅成小疙瘩",
+      "西红柿切碎，鸡蛋打散",
+      "锅中热油炒西红柿至出汁",
+      "加水煮开",
+      "边搅边慢慢倒入面疙瘩",
+      "煮3分钟后淋入蛋液",
+      "加盐调味，淋香油"
+    ],
+    tips: ["面疙瘩要搅得小一点才容易熟", "水要少少加才能形成疙瘩"]
+  },
+  {
+    id: 80,
+    name: "香菇滑鸡",
+    desc: "鲜香嫩滑的广式蒸菜",
+    img: "🍄",
+    method: "蒸",
+    time: 20,
+    servings: 2,
+    cuisine: "粤菜",
+    tags: ["下饭", "多人食"],
+    bv: "BV1554y1J7g4",
+    ingredients: [
+      { name: "鸡肉", amount: "300g", required: true },
+      { name: "香菇", amount: "5-6朵", required: true }
+    ],
+    seasonings: [
+      { name: "生抽", amount: "2勺", essential: true },
+      { name: "蚝油", amount: "1勺", essential: true },
+      { name: "盐", amount: "适量", essential: true },
+      { name: "淀粉", amount: "1勺", essential: true },
+      { name: "食用油", amount: "少许", essential: true },
+      { name: "姜", amount: "几片", essential: false }
+    ],
+    steps: [
+      "鸡肉切块，加生抽、蚝油、盐、淀粉、油拌匀",
+      "香菇泡发切片（鲜香菇直接切）",
+      "鸡肉和香菇拌在一起",
+      "放上姜片",
+      "上锅大火蒸15分钟"
+    ],
+    tips: ["鸡肉加淀粉和油腌能锁住水分更嫩", "用鸡腿肉比鸡胸肉更嫩滑"]
+  },
+  {
+    id: 81,
+    name: "素炒三丝",
+    desc: "清爽的三色蔬菜丝",
+    img: "🥕",
+    method: "炒",
+    time: 8,
+    servings: 1,
+    cuisine: "家常",
+    tags: ["快手菜", "清淡", "减脂", "一人食"],
+    bv: "BV11u411D7RJ",
+    ingredients: [
+      { name: "胡萝卜", amount: "1根", required: true },
+      { name: "土豆", amount: "1个", required: true },
+      { name: "青椒", amount: "1个", required: true }
+    ],
+    seasonings: [
+      { name: "盐", amount: "适量", essential: true },
+      { name: "食用油", amount: "适量", essential: true },
+      { name: "醋", amount: "少许", essential: false }
+    ],
+    steps: [
+      "三种蔬菜全部切细丝",
+      "土豆丝泡水洗去淀粉",
+      "锅中热油大火",
+      "先下土豆丝和胡萝卜丝翻炒",
+      "再加青椒丝",
+      "淋醋加盐翻匀出锅"
+    ],
+    tips: ["全程大火快炒保持脆嫩", "土豆丝洗掉淀粉才脆"]
+  },
+  {
+    id: 82,
+    name: "水煮肉片",
+    desc: "麻辣鲜香的川味大菜",
+    img: "🌶️",
+    method: "煮",
+    time: 20,
+    servings: 2,
+    cuisine: "川菜",
+    tags: ["硬菜", "下饭", "多人食"],
+    bv: "BV1ys411u7Z4",
+    ingredients: [
+      { name: "猪肉", amount: "300g", required: true },
+      { name: "白菜", amount: "几片", required: false },
+      { name: "豆芽", amount: "一把", required: false }
+    ],
+    seasonings: [
+      { name: "豆瓣酱", amount: "2勺", essential: true },
+      { name: "干辣椒", amount: "一把", essential: true },
+      { name: "花椒", amount: "一把", essential: true },
+      { name: "食用油", amount: "多一些", essential: true },
+      { name: "盐", amount: "适量", essential: true },
+      { name: "料酒", amount: "1勺", essential: false },
+      { name: "淀粉", amount: "腌肉用", essential: false },
+      { name: "蒜", amount: "3瓣", essential: false }
+    ],
+    steps: [
+      "猪肉切薄片加盐、料酒、淀粉抓匀",
+      "白菜/豆芽焯水铺碗底",
+      "锅中热油炒豆瓣酱出红油",
+      "加水煮开调味",
+      "下肉片滑熟捞出铺在蔬菜上",
+      "顶部放蒜末、干辣椒段、花椒",
+      "另起锅烧滚油泼上去"
+    ],
+    tips: ["肉片要切薄腌好才嫩", "最后泼油的滋啦声才是灵魂"]
+  },
+  {
+    id: 83,
+    name: "大盘鸡",
+    desc: "鸡肉土豆配宽面的新疆名菜",
+    img: "🍗",
+    method: "焖",
+    time: 40,
+    servings: 3,
+    cuisine: "西北",
+    tags: ["硬菜", "多人食", "一锅出"],
+    bv: "BV12V411z7ip",
+    ingredients: [
+      { name: "鸡肉", amount: "半只", required: true },
+      { name: "土豆", amount: "2个", required: true },
+      { name: "青椒", amount: "2个", required: true },
+      { name: "面条", amount: "宽面条", required: false }
+    ],
+    seasonings: [
+      { name: "生抽", amount: "3勺", essential: true },
+      { name: "老抽", amount: "1勺", essential: true },
+      { name: "豆瓣酱", amount: "1勺", essential: true },
+      { name: "食用油", amount: "适量", essential: true },
+      { name: "盐", amount: "适量", essential: true },
+      { name: "糖", amount: "少许", essential: false },
+      { name: "姜", amount: "几片", essential: false },
+      { name: "蒜", amount: "3瓣", essential: false },
+      { name: "干辣椒", amount: "3个", essential: false },
+      { name: "八角", amount: "1个", essential: false }
+    ],
+    steps: [
+      "鸡肉剁块焯水",
+      "锅中热油炒姜蒜和干辣椒",
+      "下鸡块炒至变色",
+      "加豆瓣酱炒出红油",
+      "加生抽、老抽、糖翻匀",
+      "加水没过食材焖20分钟",
+      "加土豆块焖15分钟",
+      "加青椒翻匀收汁",
+      "面条煮熟铺底或拌汁吃"
+    ],
+    tips: ["最后拿宽面条蘸汁是精髓", "土豆后放不然太烂"]
+  },
+  {
+    id: 84,
+    name: "炒米粉",
+    desc: "嗦粉的快乐",
+    img: "🍜",
+    method: "炒",
+    time: 12,
+    servings: 1,
+    cuisine: "家常",
+    tags: ["主食", "一人食", "快手菜"],
+    bv: "BV1zx411o7Ms",
+    ingredients: [
+      { name: "米粉", amount: "1人份", required: true },
+      { name: "鸡蛋", amount: "1个", required: false },
+      { name: "白菜", amount: "几片", required: false }
+    ],
+    seasonings: [
+      { name: "生抽", amount: "2勺", essential: true },
+      { name: "老抽", amount: "少许", essential: false },
+      { name: "食用油", amount: "适量", essential: true },
+      { name: "盐", amount: "适量", essential: true },
+      { name: "蒜", amount: "2瓣", essential: false }
+    ],
+    steps: [
+      "米粉提前泡软",
+      "锅中热油炒蛋盛出",
+      "加油炒蒜末和白菜",
+      "倒入米粉",
+      "加生抽、老抽翻炒均匀",
+      "倒回鸡蛋翻匀"
+    ],
+    tips: ["米粉要提前泡软但不要太烂", "大火快炒不要粘成坨"]
+  },
+  {
+    id: 85,
+    name: "麻辣烫（自制）",
+    desc: "在家也能吃的麻辣烫",
+    img: "🫕",
+    method: "煮",
+    time: 20,
+    servings: 1,
+    cuisine: "川菜",
+    tags: ["一人食", "一锅出"],
+    bv: "BV1t1421t7Gt",
+    ingredients: [
+      { name: "豆腐", amount: "半块", required: false },
+      { name: "白菜", amount: "几片", required: false },
+      { name: "面条", amount: "1人份", required: false }
+    ],
+    seasonings: [
+      { name: "豆瓣酱", amount: "1勺", essential: true },
+      { name: "花椒", amount: "一把", essential: false },
+      { name: "干辣椒", amount: "5个", essential: false },
+      { name: "盐", amount: "适量", essential: true },
+      { name: "食用油", amount: "适量", essential: true },
+      { name: "蒜", amount: "3瓣", essential: false },
+      { name: "生抽", amount: "1勺", essential: false },
+      { name: "香油", amount: "少许", essential: false }
+    ],
+    steps: [
+      "锅中热油炒花椒和干辣椒",
+      "加豆瓣酱炒出红油",
+      "加水煮开",
+      "先下不容易熟的食材（土豆、豆腐等）",
+      "再下叶子菜和面条",
+      "煮熟后加盐、生抽调味",
+      "淋香油"
+    ],
+    tips: ["可以放任何你喜欢的食材", "底料多炒会更香"]
+  },
+  {
+    id: 86,
+    name: "香干炒肉",
+    desc: "豆干的嚼劲配肉的鲜美",
+    img: "🥩",
+    method: "炒",
+    time: 10,
+    servings: 1,
+    cuisine: "湘菜",
+    tags: ["下饭", "一人食", "快手菜"],
+    bv: "BV1D441117Yd",
+    ingredients: [
+      { name: "香干", amount: "3-4块", required: true },
+      { name: "猪肉", amount: "150g", required: true }
+    ],
+    seasonings: [
+      { name: "生抽", amount: "1勺", essential: true },
+      { name: "盐", amount: "适量", essential: true },
+      { name: "食用油", amount: "适量", essential: true },
+      { name: "蒜", amount: "2瓣", essential: false },
+      { name: "干辣椒", amount: "2个", essential: false }
+    ],
+    steps: [
+      "香干切片，猪肉切片",
+      "肉片加少许生抽腌5分钟",
+      "锅中热油大火炒肉至变色",
+      "加蒜末、干辣椒炒香",
+      "倒入香干翻炒",
+      "加盐出锅"
+    ],
+    tips: ["香干本身有咸味，盐少放", "大火快炒更香"]
+  },
+  {
+    id: 87,
+    name: "油焖大虾",
+    desc: "红亮油润的宴客菜",
+    img: "🦐",
+    method: "焖",
+    time: 15,
+    servings: 2,
+    cuisine: "家常",
+    tags: ["硬菜", "多人食"],
+    bv: "BV1CW411c7kP",
+    ingredients: [
+      { name: "虾", amount: "500g大虾", required: true }
+    ],
+    seasonings: [
+      { name: "生抽", amount: "2勺", essential: true },
+      { name: "番茄酱", amount: "2勺", essential: true },
+      { name: "糖", amount: "1勺", essential: true },
+      { name: "食用油", amount: "适量", essential: true },
+      { name: "料酒", amount: "1勺", essential: false },
+      { name: "姜", amount: "几片", essential: false },
+      { name: "蒜", amount: "3瓣", essential: false }
+    ],
+    steps: [
+      "虾开背去虾线，剪虾须",
+      "锅中热油，放虾煎至两面变红",
+      "加姜蒜爆香",
+      "加料酒、生抽、番茄酱、糖",
+      "加少量水焖3分钟",
+      "大火收汁"
+    ],
+    tips: ["虾开背更容易入味", "收汁要不停翻动"]
+  },
+  {
+    id: 88,
+    name: "西红柿牛肉面",
+    desc: "浓郁番茄汤底配嫩牛肉",
+    img: "🍜",
+    method: "煮",
+    time: 30,
+    servings: 1,
+    cuisine: "家常",
+    tags: ["主食", "一人食", "一锅出"],
+    bv: "BV19b41187kE",
+    ingredients: [
+      { name: "西红柿", amount: "2个", required: true },
+      { name: "牛肉", amount: "150g", required: true },
+      { name: "面条", amount: "1人份", required: true }
+    ],
+    seasonings: [
+      { name: "盐", amount: "适量", essential: true },
+      { name: "食用油", amount: "适量", essential: true },
+      { name: "生抽", amount: "1勺", essential: false },
+      { name: "姜", amount: "几片", essential: false },
+      { name: "葱", amount: "少许", essential: false }
+    ],
+    steps: [
+      "牛肉切薄片或小块",
+      "西红柿切块",
+      "锅中热油炒姜片",
+      "加西红柿炒出汁",
+      "加水煮开",
+      "放入牛肉煮至变色",
+      "下面条煮熟",
+      "加盐和生抽调味"
+    ],
+    tips: ["牛肉切薄才容易熟", "想更浓可以加一勺番茄酱"]
+  },
+  {
+    id: 89,
+    name: "葱爆羊肉",
+    desc: "大葱和羊肉的经典搭配",
+    img: "🥩",
+    method: "炒",
+    time: 10,
+    servings: 2,
+    cuisine: "家常",
+    tags: ["下饭", "快手菜", "多人食"],
+    bv: "BV11Q4y1r7MV",
+    ingredients: [
+      { name: "羊肉", amount: "250g", required: true },
+      { name: "葱", amount: "3-4根大葱", required: true }
+    ],
+    seasonings: [
+      { name: "生抽", amount: "1勺", essential: true },
+      { name: "料酒", amount: "1勺", essential: true },
+      { name: "盐", amount: "适量", essential: true },
+      { name: "食用油", amount: "适量", essential: true },
+      { name: "醋", amount: "少许", essential: false }
+    ],
+    steps: [
+      "羊肉切薄片加料酒、生抽腌10分钟",
+      "大葱切斜段",
+      "锅大火热油滑炒羊肉至变色",
+      "加大葱段猛火翻炒",
+      "淋少许醋，加盐出锅"
+    ],
+    tips: ["全程大火不超过2分钟", "大葱要后放保持脆嫩"]
+  },
+  {
+    id: 90,
+    name: "蒜蓉烤茄子",
+    desc: "烤箱版的蒜香茄子",
+    img: "🍆",
+    method: "烤",
+    time: 25,
+    servings: 1,
+    cuisine: "家常",
+    tags: ["一人食", "下饭"],
+    bv: "BV1ZJ411A7ZF",
+    ingredients: [
+      { name: "茄子", amount: "2个长茄", required: true }
+    ],
+    seasonings: [
+      { name: "蒜", amount: "1整头", essential: true },
+      { name: "生抽", amount: "2勺", essential: true },
+      { name: "食用油", amount: "适量", essential: true },
+      { name: "盐", amount: "适量", essential: true },
+      { name: "辣椒粉", amount: "适量", essential: false },
+      { name: "孜然", amount: "适量", essential: false }
+    ],
+    steps: [
+      "茄子对半切开，表面划花刀",
+      "刷一层油放烤箱200度烤15分钟",
+      "蒜切末，加生抽、盐、辣椒粉、油拌成蒜蓉酱",
+      "取出茄子，铺上蒜蓉酱",
+      "继续烤10分钟"
+    ],
+    tips: ["划花刀更容易入味", "没有烤箱可以用空气炸锅"]
+  },
+  {
+    id: 91,
+    name: "清蒸鲈鱼",
+    desc: "保留鱼鲜的极简做法",
+    img: "🐟",
+    method: "蒸",
+    time: 15,
+    servings: 2,
+    cuisine: "粤菜",
+    tags: ["硬菜", "多人食", "清淡"],
+    bv: "BV1QU4y1j7T4",
+    ingredients: [
+      { name: "鱼", amount: "1条鲈鱼", required: true }
+    ],
+    seasonings: [
+      { name: "生抽", amount: "蒸鱼豉油2勺", essential: true },
+      { name: "食用油", amount: "热油浇", essential: true },
+      { name: "姜", amount: "切丝铺鱼身", essential: true },
+      { name: "葱", amount: "切丝铺鱼身", essential: true },
+      { name: "料酒", amount: "1勺", essential: false }
+    ],
+    steps: [
+      "鱼处理干净，两面划几刀",
+      "鱼身上放姜丝，淋料酒",
+      "水开后上锅蒸8-10分钟",
+      "倒掉蒸出的汤汁",
+      "铺上葱丝和姜丝",
+      "淋蒸鱼豉油（生抽）",
+      "另起锅烧热油泼在葱姜上"
+    ],
+    tips: ["蒸的时间不要超过10分钟鱼肉才嫩", "最后泼热油激发香味是灵魂"]
+  },
+  {
+    id: 92,
+    name: "胡萝卜炒肉",
+    desc: "甜脆胡萝卜配滑嫩猪肉",
+    img: "🥕",
+    method: "炒",
+    time: 10,
+    servings: 1,
+    cuisine: "家常",
+    tags: ["下饭", "一人食", "快手菜"],
+    bv: "BV1zo4y1p7n4",
+    ingredients: [
+      { name: "胡萝卜", amount: "2根", required: true },
+      { name: "猪肉", amount: "100g", required: true }
+    ],
+    seasonings: [
+      { name: "盐", amount: "适量", essential: true },
+      { name: "食用油", amount: "适量", essential: true },
+      { name: "生抽", amount: "1勺", essential: false },
+      { name: "蒜", amount: "2瓣", essential: false }
+    ],
+    steps: [
+      "胡萝卜切片或丝，肉切片",
+      "肉加少许生抽腌5分钟",
+      "锅中热油炒肉至变色盛出",
+      "锅中加油炒胡萝卜",
+      "炒至变软后倒回肉片",
+      "加盐翻匀出锅"
+    ],
+    tips: ["胡萝卜用油炒才能更好吸收营养", "切薄一点更容易熟"]
+  },
+  {
+    id: 93,
+    name: "红烧鸡爪",
+    desc: "软糯入味的追剧零食",
+    img: "🍗",
+    method: "焖",
+    time: 30,
+    servings: 2,
+    cuisine: "家常",
+    tags: ["零食", "多人食"],
+    bv: "BV15R4y1w7yt",
+    ingredients: [
+      { name: "鸡爪", amount: "500g", required: true }
+    ],
+    seasonings: [
+      { name: "生抽", amount: "3勺", essential: true },
+      { name: "老抽", amount: "1勺", essential: true },
+      { name: "糖", amount: "1勺", essential: true },
+      { name: "料酒", amount: "1勺", essential: true },
+      { name: "食用油", amount: "适量", essential: true },
+      { name: "姜", amount: "几片", essential: false },
+      { name: "八角", amount: "1个", essential: false },
+      { name: "干辣椒", amount: "2个", essential: false }
+    ],
+    steps: [
+      "鸡爪剪去指甲，对半切",
+      "冷水下锅焯水捞出",
+      "锅中热油放冰糖/白糖炒糖色",
+      "放鸡爪翻炒上色",
+      "加姜片、八角、干辣椒",
+      "加生抽、老抽、料酒、水没过鸡爪",
+      "大火煮开转小火焖25分钟",
+      "大火收汁"
+    ],
+    tips: ["焯水后过冰水鸡爪皮更Q弹", "收汁不要太干，有点汤汁更好吃"]
+  },
+  {
+    id: 94,
+    name: "凉拌鸡丝",
+    desc: "鲜嫩鸡丝的爽口吃法",
+    img: "🐔",
+    method: "拌",
+    time: 15,
+    servings: 2,
+    cuisine: "家常",
+    tags: ["凉菜", "减脂", "多人食"],
+    bv: "BV1jt421P7o6",
+    ingredients: [
+      { name: "鸡肉", amount: "1块鸡胸肉", required: true },
+      { name: "黄瓜", amount: "1根", required: false }
+    ],
+    seasonings: [
+      { name: "生抽", amount: "2勺", essential: true },
+      { name: "醋", amount: "1勺", essential: true },
+      { name: "盐", amount: "适量", essential: true },
+      { name: "辣椒油", amount: "适量", essential: false },
+      { name: "蒜", amount: "2瓣", essential: false },
+      { name: "香油", amount: "少许", essential: false }
+    ],
+    steps: [
+      "鸡胸肉冷水下锅煮15分钟至熟",
+      "捞出放凉后手撕成丝",
+      "黄瓜切丝",
+      "调料碗：生抽+醋+蒜末+辣椒油+盐+香油",
+      "鸡丝、黄瓜丝加调料拌匀"
+    ],
+    tips: ["鸡肉煮的时候加姜片和料酒去腥", "手撕比刀切口感更好"]
+  },
+  {
+    id: 95,
+    name: "炒花甲",
+    desc: "鲜美的快炒海鲜",
+    img: "🐚",
+    method: "炒",
+    time: 10,
+    servings: 2,
+    cuisine: "粤菜",
+    tags: ["快手菜", "多人食"],
+    bv: "BV1BYZcYpEQG",
+    ingredients: [
+      { name: "花甲", amount: "500g", required: true }
+    ],
+    seasonings: [
+      { name: "蒜", amount: "5瓣", essential: true },
+      { name: "食用油", amount: "适量", essential: true },
+      { name: "料酒", amount: "1勺", essential: true },
+      { name: "生抽", amount: "1勺", essential: false },
+      { name: "姜", amount: "几片", essential: false },
+      { name: "干辣椒", amount: "3个", essential: false }
+    ],
+    steps: [
+      "花甲提前用盐水浸泡吐沙2小时",
+      "锅中热油炒蒜末、姜片、干辣椒",
+      "大火倒入花甲翻炒",
+      "淋料酒",
+      "盖锅盖焖2分钟至全部开口",
+      "加生抽翻匀出锅"
+    ],
+    tips: ["没开口的花甲不要吃", "吐沙很重要，加一滴油能帮助吐沙"]
+  },
+  {
+    id: 96,
+    name: "锅贴",
+    desc: "底部酥脆的中式煎饺",
+    img: "🥟",
+    method: "煎",
+    time: 15,
+    servings: 1,
+    cuisine: "家常",
+    tags: ["主食", "一人食"],
+    bv: "BV13yHfeeECm",
+    ingredients: [
+      { name: "饺子", amount: "10-15个", required: true }
+    ],
+    seasonings: [
+      { name: "食用油", amount: "适量", essential: true }
+    ],
+    steps: [
+      "平底锅倒油加热",
+      "饺子摆入锅中（可以不解冻）",
+      "底部煎至金黄",
+      "加水（到饺子1/3高度）盖锅盖",
+      "中火焖至水干",
+      "小火继续煎至底部酥脆"
+    ],
+    tips: ["和煎饺的区别是不加面粉水", "水干后听到滋啦声就是底要酥了"]
+  },
+  {
+    id: 97,
+    name: "酱牛肉",
+    desc: "做一次吃一周的卤味",
+    img: "🥩",
+    method: "焖",
+    time: 120,
+    servings: 5,
+    cuisine: "家常",
+    tags: ["硬菜", "多人食"],
+    bv: "BV117411t73c",
+    ingredients: [
+      { name: "牛肉", amount: "1000g牛腱", required: true }
+    ],
+    seasonings: [
+      { name: "生抽", amount: "5勺", essential: true },
+      { name: "老抽", amount: "2勺", essential: true },
+      { name: "盐", amount: "适量", essential: true },
+      { name: "糖", amount: "1勺", essential: false },
+      { name: "料酒", amount: "2勺", essential: false },
+      { name: "姜", amount: "一块", essential: false },
+      { name: "八角", amount: "2个", essential: false },
+      { name: "桂皮", amount: "1块", essential: false },
+      { name: "花椒", amount: "一把", essential: false }
+    ],
+    steps: [
+      "牛腱肉冷水浸泡2小时去血水",
+      "冷水下锅焯水捞出洗净",
+      "锅中放所有调料和香料",
+      "加水没过牛肉",
+      "大火煮开转小火炖2小时",
+      "关火后泡在汤汁中至少2小时",
+      "切片食用"
+    ],
+    tips: ["关火后泡着不取出味道更浓", "用高压锅可以缩短到40分钟"]
+  },
+  {
+    id: 98,
+    name: "三杯鸡",
+    desc: "一杯酱油一杯酒一杯油的台式经典",
+    img: "🍗",
+    method: "焖",
+    time: 25,
+    servings: 2,
+    cuisine: "家常",
+    tags: ["硬菜", "下饭", "多人食"],
+    bv: "BV1QR4y1p7Ac",
+    ingredients: [
+      { name: "鸡肉", amount: "500g", required: true }
+    ],
+    seasonings: [
+      { name: "生抽", amount: "2勺", essential: true },
+      { name: "料酒", amount: "2勺", essential: true },
+      { name: "香油", amount: "2勺", essential: true },
+      { name: "食用油", amount: "适量", essential: true },
+      { name: "糖", amount: "1勺", essential: true },
+      { name: "姜", amount: "一块切片", essential: false },
+      { name: "蒜", amount: "5瓣", essential: false }
+    ],
+    steps: [
+      "鸡肉剁块",
+      "锅中放香油和食用油，小火煸姜蒜",
+      "放鸡块翻炒至变色",
+      "加生抽、料酒、糖",
+      "不加水，盖锅盖小火焖20分钟",
+      "大火收汁至浓稠"
+    ],
+    tips: ["全程不加水，靠鸡肉本身出水", "香油是灵魂，一定要放够"]
+  },
+  {
+    id: 99,
+    name: "白菜豆腐汤",
+    desc: "最家常的暖胃汤",
+    img: "🥣",
+    method: "煮",
+    time: 10,
+    servings: 2,
+    cuisine: "家常",
+    tags: ["汤", "快手菜", "清淡"],
+    bv: "BV1Ue411N7Ax",
+    ingredients: [
+      { name: "白菜", amount: "几片", required: true },
+      { name: "豆腐", amount: "半块", required: true }
+    ],
+    seasonings: [
+      { name: "盐", amount: "适量", essential: true },
+      { name: "香油", amount: "少许", essential: false },
+      { name: "葱", amount: "少许", essential: false }
+    ],
+    steps: [
+      "白菜切块，豆腐切小方块",
+      "锅中烧水或用高汤",
+      "水开后放豆腐煮3分钟",
+      "加白菜煮至变软",
+      "加盐调味",
+      "淋香油撒葱花"
+    ],
+    tips: ["用高汤代替水味道更好", "豆腐先放比较容易入味"]
+  },
+  {
+    id: 100,
+    name: "烤鸡翅",
+    desc: "烤箱/空气炸锅都能做",
+    img: "🍗",
+    method: "烤",
+    time: 30,
+    servings: 2,
+    cuisine: "家常",
+    tags: ["硬菜", "多人食", "零食"],
+    bv: "BV12W411A7w8",
+    ingredients: [
+      { name: "鸡翅", amount: "10个", required: true }
+    ],
+    seasonings: [
+      { name: "生抽", amount: "2勺", essential: true },
+      { name: "蚝油", amount: "1勺", essential: true },
+      { name: "蒜", amount: "3瓣拍碎", essential: false },
+      { name: "料酒", amount: "1勺", essential: false },
+      { name: "黑胡椒", amount: "适量", essential: false },
+      { name: "蜂蜜", amount: "1勺刷表面", essential: false }
+    ],
+    steps: [
+      "鸡翅两面各划2-3刀",
+      "加生抽、蚝油、料酒、蒜、黑胡椒拌匀",
+      "冷藏腌制30分钟以上（越久越入味）",
+      "烤箱200度或空气炸锅180度",
+      "烤20分钟翻面",
+      "刷蜂蜜再烤5分钟至表面金黄"
+    ],
+    tips: ["腌制过夜效果最好", "最后刷蜂蜜可以让表面更亮更香"]
+  }
+];
+  </script>
+  <script>
+/**
+ * 今天吃啥 - 本地匹配引擎
+ * 根据用户输入的食材、调料、忌口，从菜谱库中智能推荐
+ */
+
+const Engine = {
+  /**
+   * 调料等价表：某些调料可以互相替代
+   */
+  seasoningAliases: {
+    '生抽': ['酱油', '味极鲜'],
+    '酱油': ['生抽', '味极鲜'],
+    '老抽': ['酱油', '生抽'],
+    '醋': ['陈醋', '香醋', '米醋', '白醋'],
+    '陈醋': ['醋', '香醋'],
+    '香醋': ['醋', '陈醋'],
+    '糖': ['白糖', '冰糖', '红糖'],
+    '白糖': ['糖', '冰糖'],
+    '冰糖': ['糖', '白糖'],
+    '干辣椒': ['辣椒', '辣椒粉', '辣椒油'],
+    '辣椒': ['干辣椒', '辣椒粉'],
+    '辣椒油': ['辣椒', '干辣椒'],
+    '蚝油': [],
+    '番茄酱': [],
+    '豆瓣酱': [],
+    '甜面酱': ['黄豆酱'],
+  },
+
+  /**
+   * 可省略的调料：缺了不算缺（除非标记为essential）
+   */
+  optionalSeasonings: ['鸡精', '味精', '白胡椒粉', '十三香', '五香粉', '芝麻', '香菜', '葱', '姜'],
+
+  /**
+   * 食材别名/归类
+   */
+  ingredientAliases: {
+    '青菜': ['小白菜', '油麦菜', '菠菜', '生菜', '空心菜', '小油菜', '上海青', '青菜'],
+    '白菜': ['大白菜', '白菜', '娃娃菜', '小白菜'],
+    '辣椒': ['青椒', '辣椒', '尖椒', '线椒'],
+    '鸡肉': ['鸡腿', '鸡胸肉', '鸡翅', '鸡肉', '鸡腿肉'],
+    '猪肉': ['五花肉', '猪肉', '里脊肉', '排骨', '猪排', '肉末', '肉丝'],
+    '面条': ['面条', '挂面', '意面', '拉面', '手擀面', '宽面'],
+    '粉丝': ['粉丝', '粉条', '红薯粉'],
+    '包菜': ['包菜', '卷心菜', '圆白菜', '甘蓝'],
+    '蒜苗': ['蒜苗', '蒜苔'],
+    '蒜苔': ['蒜苗', '蒜苔'],
+  },
+
+  /**
+   * 主推荐方法
+   * @param {string[]} userIngredients - 用户有的食材
+   * @param {string[]} userSeasonings - 用户有的调料
+   * @param {string[]} avoidList - 忌口
+   * @returns {Array} 排序后的推荐菜品列表
+   */
+  recommend(userIngredients, userSeasonings, avoidList) {
+    if (!userIngredients || userIngredients.length === 0) return [];
+
+    const results = [];
+
+    for (const recipe of RECIPES) {
+      // 检查忌口
+      if (this.hasAvoidItem(recipe, avoidList)) continue;
+
+      // 计算食材匹配
+      const ingredientMatch = this.matchIngredients(recipe, userIngredients);
+      
+      // 至少要匹配到一种必需食材才推荐
+      if (ingredientMatch.matchedRequired === 0) continue;
+
+      // 计算调料匹配
+      const seasoningMatch = this.matchSeasonings(recipe, userSeasonings);
+
+      // 计算综合状态
+      const status = this.calcStatus(ingredientMatch, seasoningMatch);
+
+      results.push({
+        ...recipe,
+        matchScore: ingredientMatch.score,
+        ...ingredientMatch,
+        ...seasoningMatch,
+        ...status,
+      });
+    }
+
+    // 排序：完全可做 > 缺调料 > 缺食材，同级别按匹配度排序
+    results.sort((a, b) => {
+      const statusOrder = { 'perfect': 0, 'missing_seasoning': 1, 'missing_ingredient': 2 };
+      const sa = statusOrder[a.status] || 9;
+      const sb = statusOrder[b.status] || 9;
+      if (sa !== sb) return sa - sb;
+      return b.matchScore - a.matchScore;
+    });
+
+    return results;
+  },
+
+  /**
+   * 检查菜品是否包含忌口食材
+   */
+  hasAvoidItem(recipe, avoidList) {
+    if (!avoidList || avoidList.length === 0) return false;
+    
+    const avoidLower = avoidList.map(a => a.toLowerCase());
+    
+    // 检查食材
+    for (const ing of recipe.ingredients) {
+      if (avoidLower.some(a => ing.name.toLowerCase().includes(a) || a.includes(ing.name.toLowerCase()))) {
+        return true;
+      }
+    }
+    
+    // 检查调料
+    for (const s of recipe.seasonings) {
+      if (avoidLower.some(a => s.name.toLowerCase().includes(a) || a.includes(s.name.toLowerCase()))) {
+        return true;
+      }
+    }
+
+    return false;
+  },
+
+  /**
+   * 匹配食材
+   */
+  matchIngredients(recipe, userIngredients) {
+    let matchedRequired = 0;
+    let totalRequired = 0;
+    let matchedOptional = 0;
+    let missingIngredients = [];
+    const ingredientsWithStatus = [];
+
+    for (const ing of recipe.ingredients) {
+      const isRequired = ing.required !== false;
+      if (isRequired) totalRequired++;
+      
+      const hasIt = this.userHasIngredient(ing.name, userIngredients);
+
+      ingredientsWithStatus.push({
+        ...ing,
+        have: hasIt,
+      });
+
+      if (hasIt) {
+        if (isRequired) matchedRequired++;
+        else matchedOptional++;
+      } else if (isRequired) {
+        missingIngredients.push(ing.name);
+      }
+    }
+
+    // 匹配分数：必需食材匹配比例 * 100 + 可选食材奖励
+    const score = totalRequired > 0
+      ? (matchedRequired / totalRequired) * 100 + matchedOptional * 5
+      : matchedOptional * 10;
+
+    return {
+      matchedRequired,
+      totalRequired,
+      matchedOptional,
+      missingIngredients,
+      ingredientsWithStatus,
+      score,
+    };
+  },
+
+  /**
+   * 检查用户是否有某种食材（支持别名）
+   */
+  userHasIngredient(needed, userIngredients) {
+    const neededLower = needed.toLowerCase();
+    
+    for (const userIng of userIngredients) {
+      const userLower = userIng.toLowerCase();
+      
+      // 直接匹配
+      if (neededLower.includes(userLower) || userLower.includes(neededLower)) {
+        return true;
+      }
+      
+      // 别名匹配
+      for (const [key, aliases] of Object.entries(this.ingredientAliases)) {
+        const allNames = [key, ...aliases].map(n => n.toLowerCase());
+        if (allNames.includes(neededLower) && allNames.includes(userLower)) {
+          return true;
+        }
+        // 模糊匹配：用户输入的食材包含别名组中的某个
+        if (allNames.some(n => n.includes(neededLower) || neededLower.includes(n))) {
+          if (allNames.some(n => n.includes(userLower) || userLower.includes(n))) {
+            return true;
+          }
+        }
+      }
+    }
+
+    return false;
+  },
+
+  /**
+   * 匹配调料
+   */
+  matchSeasonings(recipe, userSeasonings) {
+    // 如果用户没有填调料，默认认为基本调料都有
+    if (!userSeasonings || userSeasonings.length === 0) {
+      return {
+        seasoningStatus: { missingEssential: [], missingOptional: [] },
+        seasoningsWithStatus: recipe.seasonings.map(s => ({ ...s, have: true })),
+      };
+    }
+
+    const missingEssential = [];
+    const missingOptional = [];
+    const seasoningsWithStatus = [];
+
+    for (const s of recipe.seasonings) {
+      const hasIt = this.userHasSeasoning(s.name, userSeasonings);
+      const isEssential = s.essential !== false;
+      const isAlwaysOptional = this.optionalSeasonings.some(
+        opt => s.name.includes(opt) || opt.includes(s.name)
+      );
+
+      seasoningsWithStatus.push({ ...s, have: hasIt });
+
+      if (!hasIt) {
+        if (isEssential && !isAlwaysOptional) {
+          missingEssential.push(s.name);
+        } else {
+          missingOptional.push(s.name);
+        }
+      }
+    }
+
+    return {
+      seasoningStatus: { missingEssential, missingOptional },
+      seasoningsWithStatus,
+    };
+  },
+
+  /**
+   * 检查用户是否有某种调料（支持等价替代）
+   */
+  userHasSeasoning(needed, userSeasonings) {
+    const neededLower = needed.toLowerCase();
+    
+    for (const userS of userSeasonings) {
+      const userLower = userS.toLowerCase();
+      
+      // 直接匹配
+      if (neededLower.includes(userLower) || userLower.includes(neededLower)) {
+        return true;
+      }
+    }
+
+    // 等价替代检查
+    const aliases = this.seasoningAliases[needed] || [];
+    for (const alias of aliases) {
+      for (const userS of userSeasonings) {
+        if (alias.toLowerCase().includes(userS.toLowerCase()) || userS.toLowerCase().includes(alias.toLowerCase())) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  },
+
+  /**
+   * 计算最终状态
+   */
+  calcStatus(ingredientMatch, seasoningMatch) {
+    const missingIng = ingredientMatch.missingIngredients;
+    const missingEssentialSeasoning = seasoningMatch.seasoningStatus.missingEssential;
+
+    if (missingIng.length === 0 && missingEssentialSeasoning.length === 0) {
+      return {
+        status: 'perfect',
+        statusText: '完全可做 ✅',
+      };
+    }
+
+    if (missingIng.length === 0 && missingEssentialSeasoning.length > 0) {
+      return {
+        status: 'missing_seasoning',
+        statusText: `缺调料：${missingEssentialSeasoning.join('、')}`,
+      };
+    }
+
+    return {
+      status: 'missing_ingredient',
+      statusText: `缺食材：${missingIng.join('、')}`,
+    };
+  },
+};
+
+  </script>
+  <script>
+/**
+ * 今天吃啥 - 主应用逻辑（本地菜谱库版）
+ */
+
+const App = {
+  // ===== State =====
+  ingredients: [],
+  avoidList: [],
+  seasonings: [],
+  results: [],
+  allResults: [],
+  currentFilters: {},
+
+  // ===== Default Quick-Add Items =====
+  quickIngredients: ['西红柿', '鸡蛋', '黄瓜', '土豆', '青椒', '白菜', '豆腐', '面条', '米饭', '猪肉', '鸡肉', '茄子', '红薯', '包菜', '蒜苔', '胡萝卜', '粉丝', '虾', '排骨', '牛肉'],
+  quickSeasonings: ['盐', '食用油', '生抽', '老抽', '醋', '糖', '蒜', '姜', '葱', '料酒', '辣椒油', '花椒', '豆瓣酱', '香油', '蚝油', '番茄酱', '干辣椒', '黑胡椒'],
+  quickAvoid: ['辣椒', '葱', '姜', '蒜', '花椒', '香菜', '牛肉', '猪肉', '羊肉', '海鲜'],
+
+  // ===== Init =====
+  init() {
+    this.loadSaved();
+    this.renderPage('input');
+    this.setupEventListeners();
+    this.renderQuickAdds();
+  },
+
+  // ===== LocalStorage =====
+  loadSaved() {
+    const savedAvoid = localStorage.getItem('eat_avoid');
+    const savedSeasonings = localStorage.getItem('eat_seasonings');
+    if (savedAvoid) this.avoidList = JSON.parse(savedAvoid);
+    if (savedSeasonings) this.seasonings = JSON.parse(savedSeasonings);
+  },
+
+  saveAvoid() {
+    localStorage.setItem('eat_avoid', JSON.stringify(this.avoidList));
+    this.showToast('忌口已保存');
+  },
+
+  saveSeasonings() {
+    localStorage.setItem('eat_seasonings', JSON.stringify(this.seasonings));
+    this.showToast('调料已保存');
+  },
+
+  // ===== Navigation =====
+  renderPage(page, data) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    const target = document.getElementById(`page-${page}`);
+    if (target) {
+      target.classList.add('active');
+      window.scrollTo(0, 0);
+    }
+
+    if (page === 'input') {
+      this.renderInputPage();
+    } else if (page === 'results') {
+      this.renderResultsPage();
+    } else if (page === 'detail') {
+      this.renderDetailPage(data);
+    }
+  },
+
+  // ===== Input Page =====
+  renderInputPage() {
+    this.renderTags('ingredients-tags', this.ingredients, 'tag-ingredient', 'ingredients');
+    this.renderTags('avoid-tags', this.avoidList, 'tag-avoid', 'avoidList');
+    this.renderTags('seasonings-tags', this.seasonings, 'tag-seasoning', 'seasonings');
+    this.updateSearchButton();
+    this.updateSavedStatus();
+  },
+
+  renderTags(containerId, items, className, listName) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    if (items.length === 0) {
+      container.innerHTML = '<span style="color:var(--text-lighter);font-size:0.85rem;">还没有添加...</span>';
+      return;
+    }
+
+    const existingTags = container.querySelectorAll('.tag');
+    const oldCount = existingTags.length;
+
+    container.innerHTML = items.map((item, i) => `
+      <span class="tag ${className}" style="${i < oldCount ? 'animation:none;' : ''}">
+        ${item}
+        <span class="remove" onclick="App.removeTag('${listName}', ${i})">×</span>
+      </span>
+    `).join('');
+  },
+
+  renderQuickAdds() {
+    this.renderQuickAddBtns('quick-ingredients', this.quickIngredients, 'ingredients');
+    this.renderQuickAddBtns('quick-avoid', this.quickAvoid, 'avoidList');
+    this.renderQuickAddBtns('quick-seasonings', this.quickSeasonings, 'seasonings');
+  },
+
+  renderQuickAddBtns(containerId, items, listName) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    container.innerHTML = items.map(item => `
+      <button class="quick-add-btn" onclick="App.quickAdd('${listName}', '${item}')">+ ${item}</button>
+    `).join('');
+  },
+
+  quickAdd(listName, item) {
+    if (!this[listName].includes(item)) {
+      this[listName].push(item);
+      this.renderInputPage();
+    }
+  },
+
+  addTag(listName, inputId) {
+    const input = document.getElementById(inputId);
+    const value = input.value.trim();
+    if (value && !this[listName].includes(value)) {
+      const items = value.split(/[,，、\s]+/).filter(Boolean);
+      items.forEach(item => {
+        if (item && !this[listName].includes(item)) {
+          this[listName].push(item);
+        }
+      });
+      input.value = '';
+      this.renderInputPage();
+    }
+  },
+
+  removeTag(listName, index) {
+    const containerMap = {
+      'ingredients': 'ingredients-tags',
+      'avoidList': 'avoid-tags',
+      'seasonings': 'seasonings-tags'
+    };
+    const containerId = containerMap[listName];
+    const container = document.getElementById(containerId);
+
+    this[listName].splice(index, 1);
+
+    if (container) {
+      const tags = container.querySelectorAll('.tag');
+      const targetTag = tags[index];
+      if (targetTag) {
+        targetTag.style.transition = 'opacity 0.2s, transform 0.2s';
+        targetTag.style.opacity = '0';
+        targetTag.style.transform = 'scale(0.8)';
+        targetTag.addEventListener('transitionend', () => {
+          this.renderTagsNoAnim(containerId, this[listName], this.getTagClass(listName), listName);
+        }, { once: true });
+      } else {
+        this.renderTagsNoAnim(containerId, this[listName], this.getTagClass(listName), listName);
+      }
+    }
+
+    this.updateSearchButton();
+    this.updateSavedStatus();
+  },
+
+  getTagClass(listName) {
+    const map = { 'ingredients': 'tag-ingredient', 'avoidList': 'tag-avoid', 'seasonings': 'tag-seasoning' };
+    return map[listName];
+  },
+
+  renderTagsNoAnim(containerId, items, className, listName) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    if (items.length === 0) {
+      container.innerHTML = '<span style="color:var(--text-lighter);font-size:0.85rem;">还没有添加...</span>';
+      return;
+    }
+
+    container.innerHTML = items.map((item, i) => `
+      <span class="tag ${className}" style="animation:none;">
+        ${item}
+        <span class="remove" onclick="App.removeTag('${listName}', ${i})">×</span>
+      </span>
+    `).join('');
+  },
+
+  updateSearchButton() {
+    const btn = document.getElementById('btn-search');
+    if (btn) {
+      btn.disabled = this.ingredients.length === 0;
+      btn.textContent = this.ingredients.length === 0
+        ? '请先添加食材'
+        : `开始找菜 🍳 (${this.ingredients.length}种食材)`;
+    }
+  },
+
+  updateSavedStatus() {
+    const savedAvoid = localStorage.getItem('eat_avoid');
+    const savedSeasonings = localStorage.getItem('eat_seasonings');
+
+    const avoidSaveRow = document.getElementById('avoid-save-row');
+    const seasoningSaveRow = document.getElementById('seasoning-save-row');
+
+    if (avoidSaveRow) {
+      if (savedAvoid && this.avoidList.length > 0) {
+        avoidSaveRow.innerHTML = '<span>\u2705 已保存</span><div class="action-btns"><button onclick="App.saveAvoid()">更新</button><button onclick="App.clearSaved(\'avoid\')">清除</button></div>';
+      } else if (this.avoidList.length > 0) {
+        avoidSaveRow.innerHTML = '<span>未保存</span><button onclick="App.saveAvoid()">保存到下次</button>';
+      } else {
+        avoidSaveRow.innerHTML = '';
+      }
+    }
+
+    if (seasoningSaveRow) {
+      if (savedSeasonings && this.seasonings.length > 0) {
+        seasoningSaveRow.innerHTML = '<span>\u2705 已保存</span><div class="action-btns"><button onclick="App.saveSeasonings()">更新</button><button onclick="App.clearSaved(\'seasonings\')">清除</button></div>';
+      } else if (this.seasonings.length > 0) {
+        seasoningSaveRow.innerHTML = '<span>未保存</span><button onclick="App.saveSeasonings()">保存到下次</button>';
+      } else {
+        seasoningSaveRow.innerHTML = '';
+      }
+    }
+  },
+
+  clearSaved(type) {
+    if (type === 'avoid') {
+      localStorage.removeItem('eat_avoid');
+    } else {
+      localStorage.removeItem('eat_seasonings');
+    }
+    this.showToast('已清除保存');
+    this.updateSavedStatus();
+  },
+
+  // ===== Search (Local Engine) =====
+  doSearch() {
+    if (this.ingredients.length === 0) return;
+
+    this.currentFilters = {};
+    this.allResults = Engine.recommend(this.ingredients, this.seasonings, this.avoidList);
+    this.results = [...this.allResults];
+
+    this.renderPage('results');
+  },
+
+  // ===== Results Page =====
+  renderResultsPage() {
+    const container = document.getElementById('results-list');
+    const countEl = document.getElementById('results-count');
+
+    if (countEl) {
+      countEl.textContent = `找到 ${this.results.length} 道菜`;
+    }
+
+    if (!container) return;
+
+    if (this.results.length === 0) {
+      container.innerHTML = `
+        <div class="empty-state">
+          <div class="emoji">😅</div>
+          <p>没有找到匹配的菜品</p>
+          <p style="margin-top:8px;font-size:0.8rem;">试试减少筛选条件，或者添加更多食材</p>
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = this.results.map((r, i) => `
+      <div class="recipe-card" style="animation-delay:${i * 0.04}s" onclick="App.showDetail(${r.id})">
+        <div class="emoji-img">${r.img}</div>
+        <div class="info">
+          <div class="name">${r.name}</div>
+          <div class="desc">${r.desc || ''}</div>
+          <div class="meta">
+            <span class="meta-tag ${r.status === 'perfect' ? 'perfect' : r.status === 'missing_seasoning' ? 'missing-seasoning' : 'missing-ingredient'}">${r.statusText}</span>
+            <span class="meta-tag method">${r.method}</span>
+            <span class="meta-tag time">${r.time}分钟</span>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  },
+
+  applyFilter(type, value) {
+    const booleanFilters = ['noFire', 'onePot', 'noBuy', 'allowBuyOne'];
+
+    if (booleanFilters.includes(type)) {
+      if (this.currentFilters[type]) {
+        delete this.currentFilters[type];
+      } else {
+        this.currentFilters[type] = true;
+      }
+    } else {
+      if (this.currentFilters[type] === value) {
+        delete this.currentFilters[type];
+      } else {
+        this.currentFilters[type] = value;
+      }
+    }
+
+    this.results = this.filterResults(this.allResults, this.currentFilters);
+    this.renderResultsPage();
+    this.updateFilterChips();
+  },
+
+  filterResults(all, filters) {
+    let results = [...all];
+
+    if (filters.servings) {
+      if (filters.servings === '一人食') {
+        results = results.filter(r => r.servings <= 1);
+      } else if (filters.servings === '多人食') {
+        results = results.filter(r => r.servings >= 2);
+      }
+    }
+
+    if (filters.method) {
+      results = results.filter(r => {
+        if (filters.method === '焖') return r.method === '焖' || r.method === '炖';
+        return r.method === filters.method;
+      });
+    }
+
+    if (filters.cuisine) {
+      results = results.filter(r => r.cuisine === filters.cuisine);
+    }
+
+    if (filters.noFire) {
+      results = results.filter(r =>
+        r.method === '拌' || r.method === '无火' ||
+        (r.tags && r.tags.includes('无火'))
+      );
+    }
+
+    if (filters.onePot) {
+      results = results.filter(r => r.tags && r.tags.includes('一锅出'));
+    }
+
+    if (filters.noBuy) {
+      results = results.filter(r =>
+        r.status === 'perfect' || r.status === 'missing_seasoning'
+      );
+    }
+
+    if (filters.allowBuyOne) {
+      results = results.filter(r =>
+        !r.missingIngredients || r.missingIngredients.length <= 1
+      );
+    }
+
+    return results;
+  },
+
+  updateFilterChips() {
+    document.querySelectorAll('.filter-chip').forEach(chip => {
+      const type = chip.dataset.filterType;
+      const value = chip.dataset.filterValue;
+
+      if (type === 'noFire' || type === 'onePot' || type === 'noBuy' || type === 'allowBuyOne') {
+        chip.classList.toggle('active', !!this.currentFilters[type]);
+      } else {
+        chip.classList.toggle('active', this.currentFilters[type] === value);
+      }
+    });
+  },
+
+  // ===== Detail Page =====
+  showDetail(recipeId) {
+    const recipe = this.results.find(r => r.id === recipeId) ||
+                   this.allResults.find(r => r.id === recipeId);
+    if (!recipe) return;
+    this.renderPage('detail', recipe);
+  },
+
+  renderDetailPage(recipe) {
+    const container = document.getElementById('detail-content');
+    if (!container) return;
+
+    // 使用匹配引擎的结果，或者直接用原始数据
+    const ingredients = recipe.ingredientsWithStatus || recipe.ingredients.map(i => ({ ...i, have: true }));
+    const seasonings = recipe.seasoningsWithStatus || recipe.seasonings;
+    const seasoningStatus = recipe.seasoningStatus || { missingEssential: [], missingOptional: [] };
+
+    // 优先使用具体视频链接，否则回退到搜索页
+    const biliUrl = recipe.bv
+      ? `https://www.bilibili.com/video/${recipe.bv}`
+      : `https://search.bilibili.com/all?keyword=${encodeURIComponent(recipe.name + ' 做法 教程')}&order=click`;
+    const xhsSearchUrl = `https://www.xiaohongshu.com/search_result?keyword=${encodeURIComponent(recipe.name + ' 做法 教程')}&type=51`;
+
+    container.innerHTML = `
+      <!-- Hero -->
+      <div class="detail-hero">
+        <span class="emoji-big">${recipe.img}</span>
+        <h2>${recipe.name}</h2>
+        <p class="desc">${recipe.desc || ''}</p>
+        <div class="detail-meta">
+          <div class="detail-meta-item">
+            <span class="value">${recipe.time}min</span>
+            <span class="label">烹饪时间</span>
+          </div>
+          <div class="detail-meta-item">
+            <span class="value">${recipe.method}</span>
+            <span class="label">烹饪方式</span>
+          </div>
+          <div class="detail-meta-item">
+            <span class="value">${recipe.servings <= 1 ? '1人' : recipe.servings + '人'}</span>
+            <span class="label">份量</span>
+          </div>
+          <div class="detail-meta-item">
+            <span class="value">${recipe.cuisine}</span>
+            <span class="label">菜系</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ingredients -->
+      <div class="detail-section">
+        <h3>\uD83E\uDD6C 食材清单</h3>
+        <div class="ingredient-list">
+          ${ingredients.map(ing => {
+            const have = ing.have !== false;
+            return `<div class="ingredient-item">
+              <span class="dot ${have ? 'have' : 'need'}"></span>
+              <span>${ing.name}${ing.required === false ? '(可选)' : ''}</span>
+              <span class="amount">${ing.amount || ''}</span>
+            </div>`;
+          }).join('')}
+        </div>
+      </div>
+
+      <!-- Seasonings -->
+      ${seasonings && seasonings.length > 0 ? `
+      <div class="detail-section">
+        <h3>\uD83E\uDDC2 调料</h3>
+        <div class="seasoning-list">
+          ${seasonings.map(s => {
+            const isMissingEssential = (seasoningStatus.missingEssential || []).includes(s.name);
+            const isMissingOptional = (seasoningStatus.missingOptional || []).includes(s.name);
+            let cls = 'have';
+            let suffix = '';
+            if (isMissingEssential) {
+              cls = 'essential-missing';
+              suffix = ' \u26a0\ufe0f\u7f3a';
+            } else if (isMissingOptional) {
+              cls = 'optional-missing';
+              suffix = ' (\u53ef\u7701)';
+            }
+            return `<span class="seasoning-item ${cls}">${s.name} ${s.amount || ''}${suffix}</span>`;
+          }).join('')}
+        </div>
+      </div>
+      ` : ''}
+
+      <!-- Steps -->
+      <div class="detail-section">
+        <h3>\uD83D\uDC68\u200D\uD83C\uDF73 做法步骤</h3>
+        <div class="step-list">
+          ${(recipe.steps || []).map(step => `
+            <div class="step-item">
+              <div class="step-text">${step}</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+
+      <!-- Tips -->
+      ${recipe.tips && recipe.tips.length > 0 ? `
+      <div class="detail-section">
+        <h3>小贴士</h3>
+        <div class="tip-list">
+          ${recipe.tips.map(tip => `<div class="tip-item">${tip}</div>`).join('')}
+        </div>
+      </div>
+      ` : ''}
+
+      <!-- Video Tutorial Links -->
+      <div class="detail-section tutorial-links-section">
+        <h3>\uD83D\uDCFA 去看视频教程</h3>
+        <p class="tutorial-desc">点击跳转到最相关的视频教程，跟着做更简单</p>
+        <div class="tutorial-links">
+          <a class="tutorial-btn bilibili" href="${biliUrl}" target="_blank" rel="noopener" onclick="event.stopPropagation()">
+            <span class="tutorial-icon">\uD83D\uDCFA</span>
+            <span class="tutorial-text">
+              <span class="tutorial-platform">B站视频教程</span>
+              <span class="tutorial-sub">${recipe.bv ? '精选热门教程，点击直达' : '按播放量排序，最热门的排最前面'}</span>
+            </span>
+            <span class="tutorial-arrow">\u2192</span>
+          </a>
+          <a class="tutorial-btn xiaohongshu" href="${xhsSearchUrl}" target="_blank" rel="noopener" onclick="event.stopPropagation()">
+            <span class="tutorial-icon">\uD83D\uDCD5</span>
+            <span class="tutorial-text">
+              <span class="tutorial-platform">小红书图文教程</span>
+              <span class="tutorial-sub">图文 + 短视频教程</span>
+            </span>
+            <span class="tutorial-arrow">\u2192</span>
+          </a>
+        </div>
+      </div>
+    `;
+  },
+
+  goBack() {
+    const detailPage = document.getElementById('page-detail');
+    if (detailPage && detailPage.classList.contains('active')) {
+      this.renderPage('results');
+    } else {
+      this.renderPage('input');
+    }
+  },
+
+  // ===== Toast =====
+  showToast(msg) {
+    let toast = document.getElementById('toast');
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.id = 'toast';
+      toast.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);padding:10px 20px;background:rgba(0,0,0,0.75);color:white;border-radius:20px;font-size:0.85rem;z-index:999;transition:opacity 0.3s;';
+      document.body.appendChild(toast);
+    }
+    toast.textContent = msg;
+    toast.style.opacity = '1';
+    setTimeout(() => { toast.style.opacity = '0'; }, 2000);
+  },
+
+  // ===== Event Listeners =====
+  setupEventListeners() {
+    ['input-ingredient', 'input-avoid', 'input-seasoning'].forEach(id => {
+      const input = document.getElementById(id);
+      if (input) {
+        input.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            const listMap = {
+              'input-ingredient': 'ingredients',
+              'input-avoid': 'avoidList',
+              'input-seasoning': 'seasonings'
+            };
+            this.addTag(listMap[id], id);
+          }
+        });
+      }
+    });
+  }
+};
+
+// Start
+document.addEventListener('DOMContentLoaded', () => App.init());
+
+  </script>
+</body>
+</html>
