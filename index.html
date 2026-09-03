@@ -9,24 +9,26 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 :root {
-  --primary: #FF6B35;
-  --primary-light: #FF8F5E;
-  --primary-bg: #FFF5F0;
-  --secondary: #2EC4B6;
-  --secondary-light: #E8FAF8;
-  --bg: #FAFAF8;
+  --primary: #FFC529;
+  --primary-dark: #F5A623;
+  --primary-light: #FFDD70;
+  --primary-bg: #FFF8E7;
+  --secondary: #333333;
+  --secondary-light: #F7F7F5;
+  --bg: #F5F5F3;
   --card-bg: #FFFFFF;
-  --text: #2D2D2D;
+  --text: #1A1A1A;
   --text-light: #666666;
-  --text-lighter: #999999;
+  --text-lighter: #AAAAAA;
   --border: #EEEEEE;
-  --success: #4CAF50;
-  --warning: #FF9800;
-  --danger: #F44336;
-  --radius: 16px;
-  --radius-sm: 10px;
-  --shadow: 0 2px 12px rgba(0,0,0,0.06);
-  --shadow-lg: 0 8px 30px rgba(0,0,0,0.1);
+  --success: #34C759;
+  --warning: #FF9500;
+  --danger: #FF3B30;
+  --radius: 20px;
+  --radius-sm: 14px;
+  --radius-xs: 10px;
+  --shadow: 0 2px 16px rgba(0,0,0,0.05);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.08);
 }
 
 html { font-size: 16px; }
@@ -46,12 +48,12 @@ body {
   max-width: 480px;
   margin: 0 auto;
   padding: 0 16px 100px;
-  animation: fadeIn 0.3s ease;
+  animation: fadeIn 0.35s ease;
 }
 .page.active { display: block; }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
+  from { opacity: 0; transform: translateY(12px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
@@ -63,30 +65,31 @@ body {
 /* ===== Header ===== */
 .header {
   text-align: center;
-  padding: 40px 0 24px;
+  padding: 44px 0 28px;
 }
 .header .logo {
-  font-size: 3rem;
-  margin-bottom: 8px;
+  font-size: 3.5rem;
+  margin-bottom: 10px;
   display: block;
-  animation: bounce 2s ease infinite;
+  animation: bounce 2.5s ease infinite;
 }
 @keyframes bounce {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-8px); }
 }
 .header h1 {
-  font-size: 1.5rem;
-  font-weight: 700;
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.02em;
+}
+.header h1 .accent {
+  color: var(--primary-dark);
 }
 .header p {
   color: var(--text-light);
   font-size: 0.875rem;
-  margin-top: 4px;
+  margin-top: 6px;
 }
 
 /* ===== Section ===== */
@@ -95,19 +98,28 @@ body {
 }
 .section-title {
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: 700;
   margin-bottom: 12px;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
 }
-.section-title .icon { font-size: 1.2rem; }
+.section-title .icon {
+  font-size: 1.3rem;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--primary-bg);
+  border-radius: 10px;
+}
 
 /* ===== Tag Input Area ===== */
 .tag-input-area {
   background: var(--card-bg);
   border-radius: var(--radius);
-  padding: 16px;
+  padding: 18px;
   box-shadow: var(--shadow);
 }
 .tags-container {
@@ -120,32 +132,32 @@ body {
 .tag {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: 6px 12px;
-  border-radius: 20px;
+  gap: 5px;
+  padding: 7px 14px;
+  border-radius: 24px;
   font-size: 0.875rem;
   font-weight: 500;
   animation: slideUp 0.2s ease;
 }
 .tag-ingredient {
   background: var(--primary-bg);
-  color: var(--primary);
-  border: 1px solid rgba(255,107,53,0.2);
+  color: #8B6914;
+  border: 1.5px solid rgba(255,197,41,0.3);
 }
 .tag-avoid {
   background: #FFF0F0;
   color: var(--danger);
-  border: 1px solid rgba(244,67,54,0.2);
+  border: 1.5px solid rgba(255,59,48,0.15);
 }
 .tag-seasoning {
-  background: var(--secondary-light);
-  color: var(--secondary);
-  border: 1px solid rgba(46,196,182,0.2);
+  background: #F0F7F0;
+  color: #2D7A2D;
+  border: 1.5px solid rgba(52,199,89,0.2);
 }
 .tag .remove {
   cursor: pointer;
   font-size: 1rem;
-  opacity: 0.6;
+  opacity: 0.5;
   transition: opacity 0.2s;
   line-height: 1;
 }
@@ -157,43 +169,47 @@ body {
 }
 .input-row input {
   flex: 1;
-  padding: 10px 14px;
+  padding: 12px 16px;
   border: 2px solid var(--border);
   border-radius: var(--radius-sm);
   font-size: 0.9rem;
   outline: none;
   transition: border-color 0.2s;
+  background: var(--secondary-light);
 }
 .input-row input:focus {
   border-color: var(--primary);
+  background: #fff;
 }
 .input-row input::placeholder {
   color: var(--text-lighter);
 }
 .btn-add {
-  padding: 10px 16px;
+  padding: 12px 18px;
   background: var(--primary);
-  color: white;
+  color: var(--text);
   border: none;
   border-radius: var(--radius-sm);
   font-size: 0.9rem;
+  font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
   transition: all 0.2s;
 }
 .btn-add:active { transform: scale(0.95); }
+.btn-add:hover { background: var(--primary-dark); }
 
 /* Quick add buttons */
 .quick-adds {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  margin-top: 10px;
+  margin-top: 12px;
 }
 .quick-add-btn {
-  padding: 4px 10px;
-  border: 1.5px dashed var(--border);
-  border-radius: 16px;
+  padding: 5px 12px;
+  border: 1.5px dashed #DDD;
+  border-radius: 20px;
   background: none;
   font-size: 0.8rem;
   color: var(--text-light);
@@ -202,7 +218,7 @@ body {
 }
 .quick-add-btn:hover {
   border-color: var(--primary);
-  color: var(--primary);
+  color: var(--primary-dark);
   background: var(--primary-bg);
 }
 
@@ -211,24 +227,25 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: 10px;
-  padding: 8px 12px;
-  background: #F8F8F6;
-  border-radius: var(--radius-sm);
+  margin-top: 12px;
+  padding: 10px 14px;
+  background: var(--secondary-light);
+  border-radius: var(--radius-xs);
   font-size: 0.8rem;
   color: var(--text-light);
 }
 .saved-row .action-btns {
   display: flex;
-  gap: 8px;
+  gap: 10px;
 }
 .saved-row button {
   background: none;
   border: none;
-  color: var(--primary);
+  color: var(--primary-dark);
   font-size: 0.8rem;
+  font-weight: 600;
   cursor: pointer;
-  text-decoration: underline;
+  text-decoration: none;
 }
 
 /* ===== Main CTA Button ===== */
@@ -236,26 +253,28 @@ body {
   display: block;
   width: 100%;
   padding: 16px;
-  background: linear-gradient(135deg, var(--primary), var(--primary-light));
-  color: white;
+  background: var(--primary);
+  color: var(--text);
   border: none;
   border-radius: var(--radius);
   font-size: 1.1rem;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 4px 15px rgba(255,107,53,0.3);
+  box-shadow: 0 4px 16px rgba(255,197,41,0.35);
   transition: all 0.3s;
   margin-top: 24px;
 }
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(255,107,53,0.4);
+  box-shadow: 0 6px 24px rgba(255,197,41,0.45);
+  background: var(--primary-dark);
 }
 .btn-primary:active {
   transform: translateY(0);
 }
 .btn-primary:disabled {
-  background: #CCC;
+  background: #DDD;
+  color: #999;
   box-shadow: none;
   cursor: not-allowed;
 }
@@ -265,18 +284,20 @@ body {
   display: flex;
   align-items: center;
   padding: 16px 0;
-  gap: 12px;
+  gap: 14px;
 }
 .btn-back {
-  width: 40px;
-  height: 40px;
+  width: 42px;
+  height: 42px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--card-bg);
+  background: var(--primary);
+  color: var(--text);
   border: none;
-  border-radius: 12px;
+  border-radius: 14px;
   font-size: 1.2rem;
+  font-weight: 700;
   cursor: pointer;
   box-shadow: var(--shadow);
   transition: all 0.2s;
@@ -284,8 +305,8 @@ body {
 }
 .btn-back:active { transform: scale(0.9); }
 .results-title {
-  font-size: 1.2rem;
-  font-weight: 600;
+  font-size: 1.25rem;
+  font-weight: 700;
 }
 .results-count {
   font-size: 0.85rem;
@@ -304,31 +325,33 @@ body {
 .filter-bar::-webkit-scrollbar { display: none; }
 
 .filter-chip {
-  padding: 7px 14px;
+  padding: 8px 16px;
   border: 1.5px solid var(--border);
-  border-radius: 20px;
+  border-radius: 24px;
   background: var(--card-bg);
-  font-size: 0.8rem;
+  font-size: 0.82rem;
   color: var(--text-light);
   cursor: pointer;
   white-space: nowrap;
   transition: all 0.2s;
   flex-shrink: 0;
+  font-weight: 500;
 }
 .filter-chip.active {
   border-color: var(--primary);
-  color: var(--primary);
+  color: var(--text);
   background: var(--primary-bg);
-  font-weight: 500;
+  font-weight: 600;
 }
 .filter-chip:active { transform: scale(0.95); }
 
 .filter-group {
-  padding: 12px 0;
+  padding: 10px 0;
 }
 .filter-group-title {
-  font-size: 0.8rem;
+  font-size: 0.82rem;
   color: var(--text-lighter);
+  font-weight: 600;
   margin-bottom: 8px;
 }
 .filter-group .filter-bar {
@@ -350,7 +373,7 @@ body {
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.25s;
   animation: slideUp 0.3s ease;
   animation-fill-mode: both;
 }
@@ -362,14 +385,14 @@ body {
   transform: translateY(0);
 }
 .recipe-card .emoji-img {
-  width: 64px;
-  height: 64px;
-  background: #F5F5F3;
-  border-radius: 14px;
+  width: 68px;
+  height: 68px;
+  background: var(--secondary-light);
+  border-radius: 18px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 2rem;
+  font-size: 2.2rem;
   flex-shrink: 0;
 }
 .recipe-card .info {
@@ -378,7 +401,7 @@ body {
 }
 .recipe-card .name {
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: 700;
   margin-bottom: 2px;
 }
 .recipe-card .desc {
@@ -395,30 +418,30 @@ body {
   gap: 6px;
 }
 .meta-tag {
-  padding: 2px 8px;
-  border-radius: 10px;
+  padding: 3px 10px;
+  border-radius: 12px;
   font-size: 0.7rem;
-  font-weight: 500;
+  font-weight: 600;
 }
 .meta-tag.perfect {
-  background: #E8F5E9;
-  color: var(--success);
+  background: #E8F9E8;
+  color: #2D8A2D;
 }
 .meta-tag.missing-seasoning {
   background: #FFF3E0;
   color: var(--warning);
 }
 .meta-tag.missing-ingredient {
-  background: #FFEBEE;
+  background: #FFEBE8;
   color: var(--danger);
 }
 .meta-tag.method {
-  background: #F3E5F5;
-  color: #9C27B0;
+  background: var(--primary-bg);
+  color: var(--primary-dark);
 }
 .meta-tag.time {
-  background: #E3F2FD;
-  color: #1976D2;
+  background: #EEF6FF;
+  color: #2E7DD1;
 }
 
 /* ===== Empty State ===== */
@@ -433,16 +456,23 @@ body {
 /* ===== Detail Page ===== */
 .detail-hero {
   text-align: center;
-  padding: 32px 0 24px;
+  padding: 36px 0 24px;
 }
 .detail-hero .emoji-big {
   font-size: 5rem;
-  display: block;
-  margin-bottom: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 120px;
+  height: 120px;
+  background: var(--secondary-light);
+  border-radius: 32px;
+  margin-bottom: 16px;
 }
 .detail-hero h2 {
   font-size: 1.5rem;
-  font-weight: 700;
+  font-weight: 800;
+  letter-spacing: -0.02em;
 }
 .detail-hero .desc {
   color: var(--text-light);
@@ -452,28 +482,38 @@ body {
 .detail-meta {
   display: flex;
   justify-content: center;
-  gap: 16px;
-  margin-top: 16px;
+  gap: 12px;
+  margin-top: 20px;
 }
 .detail-meta-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 12px 16px;
+  padding: 14px 12px 10px;
   background: var(--card-bg);
   border-radius: var(--radius-sm);
   box-shadow: var(--shadow);
-  min-width: 80px;
+  min-width: 72px;
+  border: 2px solid var(--primary-bg);
 }
 .detail-meta-item .value {
   font-size: 1rem;
-  font-weight: 600;
-  color: var(--primary);
+  font-weight: 700;
+  color: var(--text);
+  background: var(--primary);
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 0.75rem;
+  margin-bottom: 6px;
 }
 .detail-meta-item .label {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   color: var(--text-lighter);
-  margin-top: 2px;
+  font-weight: 500;
 }
 
 /* Detail sections */
@@ -486,11 +526,11 @@ body {
 }
 .detail-section h3 {
   font-size: 1rem;
-  font-weight: 600;
-  margin-bottom: 14px;
+  font-weight: 700;
+  margin-bottom: 16px;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
 }
 
 /* Ingredient list in detail */
@@ -502,15 +542,15 @@ body {
 .ingredient-item {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 8px 10px;
-  background: #F8F8F6;
-  border-radius: var(--radius-sm);
+  gap: 8px;
+  padding: 10px 12px;
+  background: var(--secondary-light);
+  border-radius: var(--radius-xs);
   font-size: 0.85rem;
 }
 .ingredient-item .dot {
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
   flex-shrink: 0;
 }
@@ -528,39 +568,39 @@ body {
 }
 .step-item {
   display: flex;
-  gap: 12px;
-  margin-bottom: 16px;
+  gap: 14px;
+  margin-bottom: 18px;
   position: relative;
 }
 .step-item:last-child { margin-bottom: 0; }
 .step-item::before {
   counter-increment: step;
   content: counter(step);
-  width: 28px;
-  height: 28px;
+  width: 30px;
+  height: 30px;
   background: var(--primary);
-  color: white;
+  color: var(--text);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.8rem;
-  font-weight: 600;
+  font-size: 0.82rem;
+  font-weight: 700;
   flex-shrink: 0;
 }
 .step-item:not(:last-child)::after {
   content: '';
   position: absolute;
-  left: 13px;
-  top: 32px;
-  bottom: -12px;
+  left: 14px;
+  top: 34px;
+  bottom: -14px;
   width: 2px;
-  background: var(--border);
+  background: var(--primary-bg);
 }
 .step-item .step-text {
   font-size: 0.9rem;
   line-height: 1.7;
-  padding-top: 3px;
+  padding-top: 4px;
 }
 
 /* Tips */
@@ -572,14 +612,14 @@ body {
 .tip-item {
   display: flex;
   gap: 8px;
-  padding: 10px 12px;
-  background: #FFFBEB;
-  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  background: var(--primary-bg);
+  border-radius: var(--radius-xs);
   font-size: 0.85rem;
   color: #8B6914;
 }
 .tip-item::before {
-  content: '💡';
+  content: '\1F4A1';
   flex-shrink: 0;
 }
 
@@ -590,13 +630,14 @@ body {
   gap: 8px;
 }
 .seasoning-item {
-  padding: 5px 12px;
-  border-radius: 16px;
-  font-size: 0.8rem;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.82rem;
+  font-weight: 500;
 }
 .seasoning-item.have {
-  background: var(--secondary-light);
-  color: var(--secondary);
+  background: #F0F7F0;
+  color: #2D7A2D;
 }
 .seasoning-item.essential-missing {
   background: #FFF3E0;
@@ -609,7 +650,7 @@ body {
 
 /* ===== Tutorial Links ===== */
 .tutorial-links-section {
-  background: linear-gradient(135deg, #FFF8F5, #FFF5F0);
+  background: linear-gradient(135deg, var(--primary-bg), #FFFDF5);
 }
 .tutorial-desc {
   font-size: 0.82rem;
@@ -637,12 +678,12 @@ body {
 .tutorial-btn .tutorial-icon {
   font-size: 1.6rem;
   flex-shrink: 0;
-  width: 40px;
-  height: 40px;
+  width: 42px;
+  height: 42px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 10px;
+  border-radius: 12px;
 }
 .tutorial-btn .tutorial-text {
   display: flex;
@@ -651,12 +692,12 @@ body {
 }
 .tutorial-btn .tutorial-platform {
   font-size: 0.95rem;
-  font-weight: 600;
+  font-weight: 700;
 }
 .tutorial-btn .tutorial-sub {
   font-size: 0.75rem;
   color: var(--text-lighter);
-  margin-top: 1px;
+  margin-top: 2px;
 }
 .tutorial-btn .tutorial-arrow {
   font-size: 1.1rem;
@@ -682,20 +723,11 @@ body {
 .tutorial-btn.bilibili .tutorial-platform {
   color: #00A1D6;
 }
-.tutorial-btn.douyin {
-  background: #F5F0FF;
-}
-.tutorial-btn.douyin .tutorial-icon {
-  background: #EDE4FF;
-}
-.tutorial-btn.douyin .tutorial-platform {
-  color: #161823;
-}
 
 /* ===== Footer Note ===== */
 .footer-note {
   text-align: center;
-  margin-top: 20px;
+  margin-top: 24px;
   padding: 16px;
 }
 .footer-note p {
@@ -712,19 +744,20 @@ body {
 @media (max-width: 360px) {
   .ingredient-list { grid-template-columns: 1fr; }
   .detail-meta { gap: 8px; }
-  .detail-meta-item { min-width: 65px; padding: 10px 12px; }
+  .detail-meta-item { min-width: 65px; padding: 10px 8px; }
 }
 
   </style>
 </head>
 <body>
 
+
   <!-- ==================== Page 1: 输入食材 ==================== -->
   <div id="page-input" class="page active">
     
     <div class="header">
       <span class="logo">🍳</span>
-      <h1>今天吃啥</h1>
+      <h1>今天<span class="accent">吃啥</span></h1>
       <p>告诉我冰箱里有啥，帮你想好做什么</p>
     </div>
 
@@ -851,7 +884,8 @@ body {
     <div id="detail-content"></div>
   </div>
 
-  <!-- All Scripts Inlined -->
+  <!-- Scripts -->
+  
   <script>
 /**
  * 今天吃啥 - 菜谱数据库
